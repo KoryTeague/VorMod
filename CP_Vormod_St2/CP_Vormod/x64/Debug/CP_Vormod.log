@@ -1,0 +1,62 @@
+﻿  CP_Vormod.cpp
+c:\program files\ibm\ilog\cplex_studio1271\cplex\include\ilcplex\ilocplexi.h(3428): warning C4996: 'IloCplex::PresolveCallbackI::~PresolveCallbackI': was declared deprecated
+  c:\program files\ibm\ilog\cplex_studio1271\cplex\include\ilcplex\ilocplexi.h(2013): note: compiler has generated 'IloCplex::PresolveCallbackI::~PresolveCallbackI' here
+  c:\program files\ibm\ilog\cplex_studio1271\cplex\include\ilcplex\ilocplexi.h(3428): note: This diagnostic occurred in the compiler generated function 'void *IloCplex::PresolveCallbackI::__delDtor(unsigned int)'
+concert.lib(ilotypes.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloenv.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloallocator.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloalg.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloexpression.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloconstraint.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloextractable.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloiterator.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilohash.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilosimplecollection.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilorandom.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(evaluator.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(evalexpand.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilothread.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloset.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloanyexpr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilostimei.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilocollectionstruct.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilocollection.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilocollectioniterator.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilomap.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilocollectionoperator.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilosbasic.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloparami.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloskiplist.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilonumfunci.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(evalkernel.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilosdisplayi.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(iloserror.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilointervalsi.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilosatomi.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilosmodel.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilossol.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilossequencei.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilosolution.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+concert.lib(ilosstructi.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilocplex.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilocplexreader.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilocpxcallback.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilogoals.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilocpxsoln.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilocplexsolnpool.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(iloannotation.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilocpxindexmanager.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(iloextrmgr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(iloexpr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilodeflpextr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilologicextr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilocolextr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(cpxcache.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilomipstart.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilomutex.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+ilocplex.lib(ilolpextr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in CP_Vormod.obj
+CP_Vormod.obj : error LNK2019: unresolved external symbol __imp__invalid_parameter referenced in function "void __cdecl std::_Debug_range2<char *>(char *,char *,wchar_t const *,unsigned int,struct std::random_access_iterator_tag)" (??$_Debug_range2@PEAD@std@@YAXPEAD0PEB_WIUrandom_access_iterator_tag@0@@Z)
+CP_Vormod.obj : error LNK2019: unresolved external symbol __imp__CrtDbgReportW referenced in function "void * __cdecl std::_Allocate(unsigned __int64,unsigned __int64,bool)" (?_Allocate@std@@YAPEAX_K0_N@Z)
+msvcprtd.lib(locale0_implib.obj) : error LNK2019: unresolved external symbol __imp__free_dbg referenced in function "public: static void __cdecl std::_Fac_node::operator delete(void *)" (??3_Fac_node@std@@SAXPEAX@Z)
+msvcprtd.lib(locale0_implib.obj) : error LNK2019: unresolved external symbol __imp__malloc_dbg referenced in function "public: static void * __cdecl std::_Fac_node::operator new(unsigned __int64)" (??2_Fac_node@std@@SAPEAX_K@Z)
+C:\Users\teagu\onedrive\documents\visual studio 2017\Projects\CP_Vormod\x64\Debug\CP_Vormod.exe : fatal error LNK1120: 4 unresolved externals
