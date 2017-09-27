@@ -1,3 +1,6 @@
+NOTE: The following instructions are depreciated.  See CPLEX - Visual Studio Instructions.pdf for new instructions (with pictures!) to install CPLEX on a new Windows machine.  The associated installers (CPLEX and Visual Studio) will have to be downloaded separately from IBM and Microsoft, or contact Kory Teague for a copy.
+CPLEX - Visual Studio Instructions.docx is also provided for the source of the .pdf in case of later alterations.
+
 Consider these instructions:
 http://www.leandro-coelho.com/how-to-configure-ms-visual-studio-to-use-ibm-cplex-concert/
 
