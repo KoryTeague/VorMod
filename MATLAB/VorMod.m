@@ -18,7 +18,7 @@ ctrl_mas_log_final = true;
 % Generate
 ctrl_gen_fig_LNSurf = true;
 ctrl_gen_fig_LNSurfOver = true;
-ctrl_gen_dat_BSLoc = 0;         % 0 = grid; 1 = PPP; 2 = nsPPP
+ctrl_gen_dat_BSLoc = 1;         % 0 = grid; 1 = PPP; 2 = nsPPP
 ctrl_gen_fig_BSScat = true;
 ctrl_gen_fig_BSVor = true;
 ctrl_gen_fig_PPPDem = true;

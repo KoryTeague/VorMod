@@ -15,8 +15,8 @@ classdef lnfield
     %               of the original field.
     %           'points' is a 2-column matrix (M x 2), where:
     %               each row represents a point
-    %               the first column is the points' x-coordinate
-    %               the second column is the points' y-coordinate
+    %               the first column are the points' x-coordinate
+    %               the second column are the points' y-coordinate
     %           'vals' is a M-length column vector, with each element
     %               as the value of the corresponding point in points
     %       obj = obj.setParam(...)
