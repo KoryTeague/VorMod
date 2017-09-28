@@ -10,7 +10,9 @@ function Plot_VorMod_Grad( fig, BS, BS_load, BS_cap, field )
     hold off
     surf(field.field-max(max(field.field)), 'linestyle', 'none')
     hold on
-    voronoi(BS(BS_load>0, 1), BS(BS_load>0, 2), 'w')
+    if sum(BS_load>0) > 2
+        voronoi(BS(BS_load>0, 1), BS(BS_load>0, 2), 'w')
+    end
     scatter(BS(BS_load>0 & BS_load<=BS_cap/5, 1), BS(BS_load>0 & BS_load<=BS_cap/5, 2), 'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k')
     scatter(BS(BS_load>BS_cap/5 & BS_load<=2*BS_cap/5, 1), BS(BS_load>BS_cap/5 & BS_load<=2*BS_cap/5, 2), 's', 'MarkerFaceColor', 'c', 'MarkerEdgeColor', 'k')
     scatter(BS(BS_load>2*BS_cap/5 & BS_load<=3*BS_cap/5, 1), BS(BS_load>2*BS_cap/5 & BS_load<=3*BS_cap/5, 2), 'v', 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k')
