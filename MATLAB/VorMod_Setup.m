@@ -22,7 +22,7 @@ scale = 2;              % Scaling Factor                (2)
 num_BS = 60;            %                               (50)
 BS_cap = 1.5e6;         %                               (1e6)
 BS_rng = 500;           %                               (500)
-num_points = 150;       %                               (250)
+num_points = 200;       %                               (250)
 num_real = 300;         %                               (50)
 
 % Iterations
