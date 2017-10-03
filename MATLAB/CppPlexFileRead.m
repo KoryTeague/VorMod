@@ -96,4 +96,3 @@ function [ data ] = CppPlexFileRead( filepath )
     end
     
 end
-

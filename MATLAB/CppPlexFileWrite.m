@@ -65,4 +65,3 @@ function CppPlexFileWrite( fileID, var, dim, format )
             error('Error\nDimension Not Supported\nNot Written To File');
     end
 end
-

@@ -24,4 +24,3 @@ function Plot_VorMod_Grad( fig, BS, BS_load, BS_cap, field )
     title('Approximation Result with Highlighted Loads')
 
 end
-

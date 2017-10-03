@@ -27,4 +27,3 @@ for index = 1:betarng
     obj_VorAppxEval{index} = CppPlexFileRead([p 'Vormod_' ...
         num2str(index, log_form) '_out2opt.dat']);
 end
-    

@@ -1,3 +1,9 @@
+% Original PLOTSCRIPT for plotting data read from running various VorMod
+% CPLEX models.  Specific version are made ("PLOTSCRIPT_*.m", currently for
+% "OptSol" and "AppxEval", but also need a "OptEval" in the future).
+
+% Currently depreciated since specific versions have been made.
+
 sat = zeros(1, betarng);
 for index = 1:betarng
 sat(index) = satis(del_VorAppxEval{index}, demand);

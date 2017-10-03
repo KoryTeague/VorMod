@@ -18,4 +18,3 @@ function CPLEXBasicWrite( DATA )
     fclose(fileID);
 
 end
-
