@@ -12,8 +12,11 @@ tic;
 [dist_min, dist_ind] = min(dists, [], 3);
 if any(any(dist_min > (BS_rng - pix_dist/2 * sqrt(2))))
     % Coverage; somewhere is not satisfied by the BS deployment
-    fprintf('Beta = 1 All-On Scenario Insufficient Coverage\n')
+    fprintf('Beta = 1 All-On Scenario Insufficient Coverage; Waiting\n')
+    pause
     %return
+else
+    fprintf('Beta = 1 All-On Scenario Sufficient Coverage\n')
 end
 BS_load = zeros(num_BS, 1);
 for r = 1:rows
@@ -24,10 +27,11 @@ for r = 1:rows
 end
 
 if any(BS_load > BS_cap)
-    fprintf('Beta = 1 All-On Scenario Insufficient Resources\n')
+    fprintf('Beta = 1 All-On Scenario Insufficient Resources; Waiting\n')
+    pause
     %return
 else
-    fprintf('Beta = 1 All-On Scenario Sufficient\n')
+    fprintf('Beta = 1 All-On Scenario Sufficient Resources\n')
 end
 
 %% Discover Beta Max for Sufficient Coverage and Resources

@@ -26,7 +26,8 @@ switch ctrl_gen_dat_BSLoc
             rows*rand([num_BS, 1])], [0 cols], [0 rows]);
     case 2
         % BS locations as nsPPP (demand field)
-        BS = HilbertCurve(cell2mat(field.nsPPP(1, num_BS, 1)), [0 cols], [0 rows]);
+        BS = HilbertCurve(cell2mat(field.nsPPP(1, num_BS, 1)), ...
+            [0 cols], [0 rows]);
     otherwise
         error('Incorrect BS Location Generation Control; Exiting\n')
 end

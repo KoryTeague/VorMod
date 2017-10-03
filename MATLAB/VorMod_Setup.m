@@ -51,7 +51,7 @@ mut_rate = 1/num_BS;    % Mutation rate                 (bit-string; 1/num_BS)
 max_gen = 1500;         % max number of gens            (1500)
 min_gen = 200;          % min number of gens            (200)
 num_fit_halt = 50;      % Halt after * w/no fit change  (25)
-num_mem_halt = 250;     % Halt after * w/no BS change   (100)
+num_mem_halt = 200;     % Halt after * w/no BS change   (100)
 
 % Other Settings
 num_mems = 60;          % Number of members per gen     (100)
