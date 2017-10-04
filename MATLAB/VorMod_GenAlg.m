@@ -205,12 +205,54 @@ for gen = 1:max_gen
     fprintf('Fit Count:\t%i\t%i\n', fit_cnt, num_fit_halt);
     fprintf('Mem Count:\t%i\t%i\n', mem_cnt, num_mem_halt);
     if fit_cnt > num_fit_halt && gen > min_gen
-        fprintf('Evolution Fitness Stalled; Breaking\n')
-        break;
+        fprintf('Evolution Fitness Stall; Begin PermSweep\n')
+        VorMod_PermSweep
+        if ctrl_ps_flag_break
+            fprintf('PermSweep Complete w/out Change; Breaking\n')
+            break;
+        else
+            fprintf('PermSweep Complete w/Change; Resetting Counts\n')
+            fit_cnt = 0;
+            prev_fit = fit_max_sweep;
+            mem_cnt = 0;
+            prev_mem = mems(1, :);
+            if ctrl_ga_fig_vor
+                figure(6)
+                voronoi(    ...
+                    BS(logical(mems(1, :)), 1),   ...
+                    BS(logical(mems(1, :)), 2)    )
+                axis([0 cols 0 rows])
+            end
+            if ctrl_ga_fig_grad
+                Plot_VorMod_Grad(figure(7), BS, BS_load, BS_cap, field);
+            end
+            drawnow
+        end
     end
     if mem_cnt > num_mem_halt && gen > min_gen && betaval > betamax
-        fprintf('Evolution Member/BS Stalled; Breaking\n')
-        break;
+        fprintf('Evolution Member/BS Stall; Begin PermSweep\n')
+        VorMod_PermSweep
+        if ctrl_ps_flag_break
+            fprintf('PermSweep Complete w/out Change; Breaking\n')
+            break;
+        else
+            fprintf('PermSweep Complete w/Change; Resetting Counts\n')
+            fit_cnt = 0;
+            prev_fit = fit_max_sweep;
+            mem_cnt = 0;
+            prev_mem = mems(1, :);
+            if ctrl_ga_fig_vor
+                figure(6)
+                voronoi(    ...
+                    BS(logical(mems(1, :)), 1),   ...
+                    BS(logical(mems(1, :)), 2)    )
+                axis([0 cols 0 rows])
+            end
+            if ctrl_ga_fig_grad
+                Plot_VorMod_Grad(figure(7), BS, BS_load, BS_cap, field);
+            end
+            drawnow
+        end
     end
 end
 
