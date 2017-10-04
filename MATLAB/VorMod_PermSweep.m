@@ -10,7 +10,8 @@
 mems_sweep = repmat(mems(fit_ind, :), num_BS, 1);
 fit_sweep = zeros(num_BS, 1);
 
-for a = 1:num_BS
+% Sweep through the BS via a random permutation
+for a = randperm(num_BS)
     % Determine Sweep Members
     mems_sweep(a, a) = ~mems_sweep(a, a);
     
