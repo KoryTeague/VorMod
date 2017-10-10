@@ -22,8 +22,8 @@ scale = 2;              % Scaling Factor                (2)
 num_BS = 75;            %                               (50)
 BS_cap = 1.5e6;         %                               (1e6)
 BS_rng = 750;           %                               (500)
-num_points = 400;       %                               (250)
-num_real = 300;         %                               (50)
+num_points = 300;       %                               (250)
+num_real = 250;         %                               (50)
 
 % Iterations
 alpha = 25:25:250;         % Number, Opt Weighted Sweep

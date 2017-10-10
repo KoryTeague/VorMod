@@ -40,7 +40,10 @@ end
 if fit_max_sweep > fit_max
     ctrl_ps_flag_break = 0;
     mems = [mems_sweep(fit_ind_sweep, :); mems(1:num_mems-1, :)];
+	%[~, fit_min_ind] = min(fit);
+	%mems(fit_min_ind, :) = mems_sweep(fit_ind_sweep, :);
     fit = [fit_sweep(fit_ind_sweep); fit(1:end-1)];
+	%fit(fit_min_ind) = fit_sweep(fit_ind_sweep);
     dist_scen = dists(:, :, logical(mems_sweep(fit_ind_sweep, :)));
     BS_ind = find(mems_sweep(fit_ind_sweep, :));
     [dist_min, dist_ind] = min(dist_scen, [], 3);
