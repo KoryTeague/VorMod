@@ -48,7 +48,7 @@ if ctrl_wd_dat_opt
     %CppPlexFileWrite(fileID, alpha, 1, '%1.5f');
     CppPlexFileWrite(fileID, alpha /    ...
         (sum(sum(field.field)) * scale * pix_dist^2),   ...
-        1, '%1.5f');
+        1, '%1.8f');
     % rateNorm
     CppPlexFileWrite(fileID, u, 3, '%i');
     
