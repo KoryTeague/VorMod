@@ -19,7 +19,7 @@ tic;
 
 %% Write Optimization Model Data
 if ctrl_wd_dat_opt
-    fileID = fopen([cpfnoptsol '\Vormod.dat'], 'w');
+    fileID = fopen([cpfnoptsol '\Vormod.dat'], 'W');
     % Header
     fprintf(fileID, ...
         '// Kory Teague, CPLEX Voronoi Model .dat file\n// %s BS = %u\n', ...
@@ -30,9 +30,12 @@ if ctrl_wd_dat_opt
     CppPlexFileWrite(fileID, num_points, 0, '%i');
     % O
     CppPlexFileWrite(fileID, num_real, 0, '%i');
-    % Capacity
+    % Capacity - report as 1, and apply to alpha
+    %{
     CppPlexFileWrite(fileID, sum(sum(field.field)) * scale * pix_dist^2, ...
         0, '%1.5f');
+    %}
+    CppPlexFileWrite(fileID, 1, 0, '%1.5f');
     % cost
     CppPlexFileWrite(fileID, ones(num_BS, 1), 1, '%1.5f');
     % rateCap
@@ -41,8 +44,11 @@ if ctrl_wd_dat_opt
     CppPlexFileWrite(fileID, demand, 1, '%1.5f');
     % prob
     CppPlexFileWrite(fileID, ones(num_real, 1) / num_real, 1, '%1.5f');
-    % alpha
-    CppPlexFileWrite(fileID, alpha, 1, '%1.5f');
+    % alpha - integrate "capacity" into alpha
+    %CppPlexFileWrite(fileID, alpha, 1, '%1.5f');
+    CppPlexFileWrite(fileID, alpha /    ...
+        (sum(sum(field.field)) * scale * pix_dist^2),   ...
+        1, '%1.5f');
     % rateNorm
     CppPlexFileWrite(fileID, u, 3, '%i');
     
@@ -53,7 +59,7 @@ end
 if ctrl_wd_dat_ga
     log_form = ['%0' num2str(ceil(log10(betarng + 1))) 'u'];
 	for iter = 1:betarng
-		fileID = fopen([cpfnappxeval '\Vormod_' num2str(iter, log_form) '.dat'], 'w');
+		fileID = fopen([cpfnappxeval '\Vormod_' num2str(iter, log_form) '.dat'], 'W');
 		
 		% Header
 		fprintf(fileID, ...

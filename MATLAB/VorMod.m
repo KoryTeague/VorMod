@@ -23,8 +23,8 @@ ctrl_gen_fig_BSScat = true;
 ctrl_gen_fig_BSVor = true;
 ctrl_gen_fig_PPPDem = true;
 % Gen Alg
-ctrl_ga_fig_vor = true;
-ctrl_ga_fig_grad = true;
+ctrl_ga_fig_vor = false;
+ctrl_ga_fig_grad = false;
 ctrl_ga_dat_xover = 0;          % 0 = uniform; n>0 = n-point
 % Write Data
 ctrl_wd_dat_opt = true;
