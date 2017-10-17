@@ -16,12 +16,12 @@ ctrl_mas_log_all = true;
 ctrl_mas_log_ga = true;
 ctrl_mas_log_final = true;
 % Generate
-ctrl_gen_fig_LNSurf = true;
-ctrl_gen_fig_LNSurfOver = true;
+ctrl_gen_fig_LNSurf = false;
+ctrl_gen_fig_LNSurfOver = false;
 ctrl_gen_dat_BSLoc = 1;         % 0 = grid; 1 = PPP; 2 = nsPPP
-ctrl_gen_fig_BSScat = true;
-ctrl_gen_fig_BSVor = true;
-ctrl_gen_fig_PPPDem = true;
+ctrl_gen_fig_BSScat = false;
+ctrl_gen_fig_BSVor = false;
+ctrl_gen_fig_PPPDem = false;
 % Gen Alg
 ctrl_ga_fig_vor = false;
 ctrl_ga_fig_grad = false;
