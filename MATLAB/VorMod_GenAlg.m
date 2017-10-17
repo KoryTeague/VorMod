@@ -184,7 +184,8 @@ for gen = 1:max_gen
         prev_fit = fit_max;
     end
     
-    if prev_mem == mems(fit_ind, :)
+    if all(prev_mem == mems(fit_ind, :)) && ...
+            (1 / fit_max - sum(mems(fit_ind, :))) > 1
         mem_cnt = mem_cnt + 1;
     else
         mem_cnt = 0;

@@ -19,16 +19,16 @@ L = 50;                 % Depth                         (50)
 scale = 2;              % Scaling Factor                (2)
 
 % Resources and Other Settings
-num_BS = 75;            %                               (50)
-BS_cap = 1.5e6;         %                               (1e6)
+num_BS = 50;            %                               (50)
+BS_cap = 4e6;           %                               (1e6)
 BS_rng = 750;           %                               (500)
-num_points = 300;       %                               (250)
-num_real = 250;         %                               (50)
+num_points = 100;       %                               (250)
+num_real = 150;         %                               (50)
 
 % Iterations
-alpha = 25:25:250;         % Number, Opt Weighted Sweep
+alpha = 50:50:1000;         % Number, Opt Weighted Sweep
 alpharng = length(alpha);
-beta = 0.5:0.1:2.5;          % Number, GA Weighted Sweep
+beta = 0.5:0.1:2.5;         % Number, GA Weighted Sweep
 betarng = length(beta);
 
 % File I/O
@@ -51,7 +51,7 @@ mut_rate = 1/num_BS;    % Mutation rate                 (bit-string; 1/num_BS)
 max_gen = 1500;         % max number of gens            (1500)
 min_gen = 200;          % min number of gens            (200)
 num_fit_halt = 50;      % Halt after * w/no fit change  (25)
-num_mem_halt = 150;     % Halt after * w/no BS change   (100)
+num_mem_halt = 100;     % Halt after * w/no BS change   (100)
 
 % Other Settings
 num_mems = 60;          % Number of members per gen     (100)
