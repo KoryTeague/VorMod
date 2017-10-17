@@ -30,25 +30,20 @@ if ctrl_wd_dat_opt
     CppPlexFileWrite(fileID, num_points, 0, '%i');
     % O
     CppPlexFileWrite(fileID, num_real, 0, '%i');
-    % Capacity - report as 1, and apply to alpha
-    %{
-    CppPlexFileWrite(fileID, sum(sum(field.field)) * scale * pix_dist^2, ...
-        0, '%1.5f');
-    %}
+    % Capacity - report as 1, and apply to other variables
     CppPlexFileWrite(fileID, 1, 0, '%.6e');
     % cost
     CppPlexFileWrite(fileID, ones(num_BS, 1), 1, '%.6e');
     % rateCap
-    CppPlexFileWrite(fileID, BS_cap * ones(num_BS, 1), 1, '%.6e');
+    CppPlexFileWrite(fileID, BS_cap * ones(num_BS, 1) / ...
+        (sum(sum(field.field)) * scale * pix_dist^2), 1, '%.6e');
     % demand
-    CppPlexFileWrite(fileID, demand, 1, '%.6e');
+    CppPlexFileWrite(fileID, demand /   ...
+        (sum(sum(field.field)) * scale * pix_dist^2), 1, '%.6e');
     % prob
     CppPlexFileWrite(fileID, ones(num_real, 1) / num_real, 1, '%.6e');
-    % alpha - integrate "capacity" into alpha
-    %CppPlexFileWrite(fileID, alpha, 1, '%1.5f');
-    CppPlexFileWrite(fileID, alpha /    ...
-        (sum(sum(field.field)) * scale * pix_dist^2),   ...
-        1, '%.6e');
+    % alpha
+    CppPlexFileWrite(fileID, alpha, 1, '%1.5f');
     % rateNorm
     CppPlexFileWrite(fileID, u, 3, '%i');
     
