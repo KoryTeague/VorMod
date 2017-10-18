@@ -43,7 +43,7 @@ if ctrl_wd_dat_opt
     % prob
     CppPlexFileWrite(fileID, ones(num_real, 1) / num_real, 1, '%.6e');
     % alpha
-    CppPlexFileWrite(fileID, alpha, 1, '%1.5f');
+    CppPlexFileWrite(fileID, alpha, 1, '%.6e');
     % rateNorm
     CppPlexFileWrite(fileID, u, 3, '%i');
     
