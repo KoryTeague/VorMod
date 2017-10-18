@@ -19,10 +19,10 @@ L = 50;                 % Depth                         (50)
 scale = 2;              % Scaling Factor                (2)
 
 % Resources and Other Settings
-num_BS = 30;            %                               (50)
-BS_cap = 4e6;           %                               (1e6)
+num_BS = 40;            %                               (50)
+BS_cap = 2e6;           %                               (1e6)
 BS_rng = 750;           %                               (500)
-num_points = 40;        %                               (250)
+num_points = 50;        %                               (250)
 num_real = 10;          %                               (50)
 
 % Iterations
