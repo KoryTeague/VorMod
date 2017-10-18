@@ -20,10 +20,10 @@ scale = 2;              % Scaling Factor                (2)
 
 % Resources and Other Settings
 num_BS = 40;            %                               (50)
-BS_cap = 2e6;           %                               (1e6)
+BS_cap = 1.5e6;         %                               (1e6)
 BS_rng = 750;           %                               (500)
-num_points = 50;        %                               (250)
-num_real = 10;          %                               (50)
+num_points = 75;        %                               (250)
+num_real = 20;          %                               (50)
 
 % Iterations
 alpha = 2:2:50;         % Number, Opt Weighted Sweep
