@@ -19,11 +19,11 @@ L = 50;                 % Depth                         (50)
 scale = 2;              % Scaling Factor                (2)
 
 % Resources and Other Settings
-num_BS = 60;            %                               (50)
-BS_cap = 1.5e6;         %                               (1e6)
+num_BS = 30;            %                               (50)
+BS_cap = 4e6;           %                               (1e6)
 BS_rng = 750;           %                               (500)
 num_points = 40;        %                               (250)
-num_real = 25;          %                               (50)
+num_real = 10;          %                               (50)
 
 % Iterations
 alpha = 2:2:50;         % Number, Opt Weighted Sweep
