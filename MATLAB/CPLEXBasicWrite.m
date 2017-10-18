@@ -1,4 +1,4 @@
-function CPLEXBasicWrite( DATA )
+function CPLEXBasicWrite( DATA, FORMAT )
 %CPLEXWrite Writes one data variable file in format for CPLEX to read
 %   Writes the given data to a dummy (temp) .dat file: 'temp.dat'
 %   This data is written in a form appropriate of its dimension in order
@@ -6,6 +6,8 @@ function CPLEXBasicWrite( DATA )
 %   data within: no header, no comments, only a single line of data.
 %   Parameters:
 %       DATA is the variable being written to file
+%       FORMAT is the format the variable is to be written as; see sprintf
+%           or fprintf for details
 
     if isvector(DATA)
         dim = 1;
@@ -14,7 +16,7 @@ function CPLEXBasicWrite( DATA )
     end
     
     fileID = fopen('temp.dat', 'w');
-    CppPlexFileWrite(fileID, DATA, dim, '%1.5f');
+    CppPlexFileWrite(fileID, DATA, dim, FORMAT);
     fclose(fileID);
 
 end
