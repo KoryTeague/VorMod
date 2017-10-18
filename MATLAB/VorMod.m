@@ -43,6 +43,7 @@ VorMod_AllOn                    % Test All-On Scenario
 if ctrl_mas_log_all
     save(['C++ Vormod\Results\' timestamp '\_AllOn.mat'])
 end
+VorMod_WriteOptData             % Write Opt Data to File
 
 %% Model GA
 beta_trk_fit = cell(betarng, 1);
@@ -71,7 +72,8 @@ for iter = 1:betarng
 end
 
 %% Model Wrapup Scripts
-VorMod_WriteData                % Write Data to Files
+%VorMod_WriteData                % Write Data to Files
+VorMod_WriteGAData              % Write GA Data to File
 
 %% Save Workspace
 if ctrl_mas_log_final
