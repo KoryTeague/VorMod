@@ -9,10 +9,12 @@
 % `beta` and `betarng` (which is equivalent to "length(beta)") should be
 % set according to the accompanying dataset.
 
-sat = zeros(1, betarng);
+%sat = zeros(1, betarng);
 for index = 1:betarng
-sat(index) = satis(del_VorAppxEval{index}, demand);
-tmp = sum(del_VorAppxEval{index}(:, :, 1), 1)';
-Plot_VorMod_Grad(figure(index), BS, tmp, BS_cap, field)
-fprintf('\n%d:\tBeta\t%1.3f\nAvg Sat:\t%1.3f\nMax Load:\t%1.3e\t%1.3e\nMin Load:\t%1.3e\t%1.3e\n', index, beta(index), sat(index), max(tmp), max(tmp) / BS_cap, min(tmp(tmp > 0)), min(tmp(tmp > 0)) / BS_cap)
+    %sat(index) = satis(del_VorAppxEval{index}, demand);
+    %tmp = sum(del_VorAppxEval{index}(:, :, 1), 1)';
+    tmp = sum(VAE.del{index}(:, :, 1), 1)';
+    Plot_VorMod_Grad(figure(index), BS, tmp, BS_cap, field)
+    %fprintf('\n%d:\tBeta\t%1.3f\nAvg Sat:\t%1.3f\nMax Load:\t%1.3e\t%1.3e\nMin Load:\t%1.3e\t%1.3e\n', index, beta(index), sat(index), max(tmp), max(tmp) / BS_cap, min(tmp(tmp > 0)), min(tmp(tmp > 0)) / BS_cap)
+    fprintf('\n%d:\tBeta\t%1.3f\nMax Load:\t%1.3e\t%1.3e\nMin Load:\t%1.3e\t%1.3e\n', index, beta(index), max(tmp), max(tmp) / BS_cap, min(tmp(tmp > 0)), min(tmp(tmp > 0)) / BS_cap)
 end
