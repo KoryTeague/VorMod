@@ -16,15 +16,15 @@ ctrl_mas_log_all = true;
 ctrl_mas_log_ga = true;
 ctrl_mas_log_final = true;
 % Generate
-ctrl_gen_fig_LNSurf = true;
-ctrl_gen_fig_LNSurfOver = true;
+ctrl_gen_fig_LNSurf = false;
+ctrl_gen_fig_LNSurfOver = false;
 ctrl_gen_dat_BSLoc = 1;         % 0 = grid; 1 = PPP; 2 = nsPPP
-ctrl_gen_fig_BSScat = true;
-ctrl_gen_fig_BSVor = true;
-ctrl_gen_fig_PPPDem = true;
+ctrl_gen_fig_BSScat = false;
+ctrl_gen_fig_BSVor = false;
+ctrl_gen_fig_PPPDem = false;
 % Gen Alg
-ctrl_ga_fig_vor = true;
-ctrl_ga_fig_grad = true;
+ctrl_ga_fig_vor = false;
+ctrl_ga_fig_grad = false;
 ctrl_ga_dat_xover = 0;          % 0 = uniform; n>0 = n-point
 % Write Data
 ctrl_wd_dat_opt = true;
@@ -43,6 +43,7 @@ VorMod_AllOn                    % Test All-On Scenario
 if ctrl_mas_log_all
     save(['C++ Vormod\Results\' timestamp '\_AllOn.mat'])
 end
+%VorMod_WriteOptData             % Write Opt Data to File
 
 %% Model GA
 beta_trk_fit = cell(betarng, 1);
@@ -72,6 +73,7 @@ end
 
 %% Model Wrapup Scripts
 VorMod_WriteData                % Write Data to Files
+%VorMod_WriteGAData              % Write GA Data to File
 
 %% Save Workspace
 if ctrl_mas_log_final

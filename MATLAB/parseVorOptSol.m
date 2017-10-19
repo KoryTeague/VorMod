@@ -10,22 +10,39 @@ if ~exist('alpharng', 'var')
     end
 end
 
-% Set this path before running
+% Path - data should be in the appropriate directory
+% Set so long as the associated data set is loaded into MATLAB (timestamp)
 p = ['C++ Vormod\Results\' timestamp '\VorOptSol\'];
 
-x_VorOptSol = cell(alpharng, 1);
-del_VorOptSol = cell(alpharng, 1);
-tim_VorOptSol = cell(alpharng, 1);
-obj_VorOptSol = cell(alpharng, 1);
+% Variable Definition
+clear 'VOS'
 
+VOS.x = cell(alpharng, 1);
+VOS.del = cell(alpharng, 1);
+VOS.del_mod = cell(alpharng, 1);
+VOS.tim = zeros(alpharng, 1);
+VOS.obj = zeros(alpharng, 1);
+VOS.sat = zeros(alpharng, 1);
+
+% Read
 for index = 1:alpharng
     fprintf('Reading %i\n', index)
-    x_VorOptSol{index} = CppPlexFileRead([p 'VorMod_outx_' ...
+    
+    VOS.x{index} = CppPlexFileRead([p 'VorMod_outx_'	...
         num2str(index) '.dat']);
-    del_VorOptSol{index} = CppPlexFileRead([p 'VorMod_outdel_' ...
+    VOS.del{index} = CppPlexFileRead([p 'VorMod_outdel_'	...
         num2str(index) '.dat']);
-    tim_VorOptSol{index} = CppPlexFileRead([p 'VorMod_outtim_' ...
+    VOS.del_mod{index} = VOS.del{index} *	...
+        (sum(sum(field.field)) * scale * pix_dist^2);
+    VOS.tim(index) = CppPlexFileRead([p 'VorMod_outtim_'	...
         num2str(index) '.dat']);
-    obj_VorOptSol{index} = CppPlexFileRead([p 'VorMod_outopt_' ...
+    VOS.obj(index) = CppPlexFileRead([p 'VorMod_outopt_'	...
         num2str(index) '.dat']);
+    VOS.sat(index) = satis(VOS.del_mod{index}, demand);
 end
+
+% Save
+save(['C++ Vormod\Results\' timestamp '\VOSres_'    ...
+    strrep(num2str(alpha(1)), '.', '_') '-' ...
+    strrep(num2str(alpha(2) - alpha(1)), '.', '_') '-'  ...
+    strrep(num2str(alpha(end)), '.', '_')], 'alpha', 'alpharng', 'VOS');
