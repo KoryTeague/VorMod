@@ -6,20 +6,16 @@
 % algorithm iterations run.
 
 %% Write Data Control
-if ~exist('ctrl_wd_dat_opt', 'var')
-    ctrl_wd_dat_opt = 1;        % Write data file for optimization model
-end
-if ~exist('ctrl_wd_dat_ga', 'var')
-    ctrl_wd_dat_ga = 1;         % Write data file for genetic algorithm
-end
+ctrl_nbs_dat_opt = 1;
+ctrl_nbs_dat_ga = 1;
 
 %% Start Write Data Timer
 cput_start = cputime;
 tic;
 
 %% Write Optimization Model Data
-if ctrl_wd_dat_opt
-    fileID = fopen(['C++ Vormod\Results\' timestamp '\VorOptSol\Vormod.dat'], 'W');
+if ctrl_nbs_dat_opt
+    fileID = fopen(['C++ Vormod\Results\' newBS_path '\VorOptSol\Vormod.dat'], 'W');
     % Header
     fprintf(fileID, ...
         '// Kory Teague, CPLEX Voronoi Model .dat file\n// %s BS = %u\n', ...
@@ -51,10 +47,10 @@ if ctrl_wd_dat_opt
 end
 
 %% Write Genetic Algorithm Data
-if ctrl_wd_dat_ga
+if ctrl_nbs_dat_ga
     log_form = ['%0' num2str(ceil(log10(betarng + 1))) 'u'];
 	for iter = 1:betarng
-		fileID = fopen(['C++ Vormod\Results\' timestamp '\VorAppxSol\Vormod_' num2str(iter, log_form) '.dat'], 'W');
+		fileID = fopen(['C++ Vormod\Results\' newBS_path '\VorAppxSol\Vormod_' num2str(iter, log_form) '.dat'], 'W');
 		
 		% Header
 		fprintf(fileID, ...

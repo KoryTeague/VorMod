@@ -12,7 +12,7 @@ tic;
 
 %% Write Optimization Model Data
 if ctrl_wd_dat_opt
-    fileID = fopen([cpfnoptsol '\Vormod.dat'], 'W');
+    fileID = fopen(['C++ Vormod\Results\' timestamp '\VorOptSol\Vormod.dat'], 'W');
     % Header
     fprintf(fileID, ...
         '// Kory Teague, CPLEX Voronoi Model .dat file\n// %s BS = %u\n', ...

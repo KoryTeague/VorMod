@@ -1,15 +1,15 @@
 % Reruns the GA with a new BS allocation without changing the demand field
 
 %% Control Parameters
+% Reset timestamp
+newBS_timestamp = datestr(now, 30);
+newBS_path = [newBS_timestamp '_' num2str(ctrl_gen_dat_BSLoc, '%01u') '_' ...
+    timestamp];
+mkdir('C++ Vormod\Results', newBS_path)
+save(['C++ Vormod\Results\' newBS_path '\_Old.mat'])
+
 % Controls the BS allocation
 ctrl_gen_dat_BSLoc = 2;
-
-% Reset timestamp
-new_timestamp = datestr(now, 30);
-new_path = [new_timestamp '_' num2str(ctrl_gen_dat_BSLoc, '%01u') '_' ...
-    timestamp];
-mkdir('C++ Vormod\Results', new_path)
-save(['C++ Vormod\Results\' new_path '\_Old.mat'])
 
 %% Model Startup - Generate
 % Generate BS Locations
@@ -79,13 +79,13 @@ end
 drawnow
 
 if ctrl_mas_log_gen
-    save(['C++ Vormod\Results\' new_path '\_Gen.mat'])
+    save(['C++ Vormod\Results\' newBS_path '\_Gen.mat'])
 end
 
 %% Model Startup - AllOn
 VorMod_AllOn
 if ctrl_mas_log_all
-    save(['C++ Vormod\Results\' new_path '\_AllOn.mat'])
+    save(['C++ Vormod\Results\' newBS_path '\_AllOn.mat'])
 end
 
 %% Model GA
@@ -110,14 +110,14 @@ for iter = 1:betarng
     beta_x{iter} = x_appx;
     beta_time{iter} = cput;
     if ctrl_mas_log_ga
-        save(['C++ Vormod\Results\' new_path '\_GA' num2str(iter, log_form) '.mat'])
+        save(['C++ Vormod\Results\' newBS_path '\_GA' num2str(iter, log_form) '.mat'])
     end
 end
 
 %% Model Wrapup Scripts
-VorMod_WriteData                % Write Data to Files
+VorMod_WriteDataNewBS               % Write Data to Files
 
 %% Save Workspace
 if ctrl_mas_log_final
-    save(['C++ Vormod\Results\' new_path '\_Final.mat'])
+    save(['C++ Vormod\Results\' newBS_path '\_Final.mat'])
 end

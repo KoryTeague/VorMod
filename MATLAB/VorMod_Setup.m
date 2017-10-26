@@ -31,12 +31,6 @@ alpharng = length(alpha);
 beta = 0.5:0.1:2.5;         % Number, GA Weighted Sweep
 betarng = length(beta);
 
-% File I/O
-cpfn = 'C++ Vormod';
-cpfnoptsol = [cpfn '\VorOptSol'];
-cpfnappxeval = [cpfn '\VorAppxEval'];
-cpfnopteval = [cpfn '\VorOptEval'];
-
 %% Genetic Algorithm Setup
 
 % Fitness costs

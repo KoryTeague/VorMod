@@ -17,36 +17,37 @@ p = ['C++ Vormod\Results\' timestamp '\VorOptSol\'];
 % Variable Definition
 clear 'VOS'
 
-VOS.alpha = alpha;
-VOS.rng =   alpharng;
-VOS.id =    timestamp;
-VOS.S =     num_BS;
-VOS.M =     num_points;
-VOS.O =     num_real;
-VOS.src =   [];                 % Source computer CPLEX ran on
-VOS.x =     cell(alpharng, 1);  %
-VOS.del =   cell(alpharng, 1);
-VOS.dmod =  cell(alpharng, 1);
-VOS.tim =   zeros(alpharng, 1);
-VOS.obj =   zeros(alpharng, 1);
-VOS.sat =   zeros(alpharng, 1);
-VOS.cost =  zeros(alpharng, 1);
+VOS.alpha = alpha;              % Vector of scaling coefficient for CPLEX
+VOS.rng =   alpharng;           % Length of data set; number of alpha
+VOS.id =    timestamp;          % Data set ID; here it's the timestamp
+VOS.S =     num_BS;             % Number of BSs
+VOS.M =     num_points;         % Number of demand points per scenario
+VOS.O =     num_real;           % Number of realization scenarios
+VOS.src =   '';                 % Source computer CPLEX ran on
+
+VOS.x =     cell(VOS.rng, 1);   % Binary; BSs selected
+VOS.del =   cell(VOS.rng, 1);   % Portion of BS s to DP m in scenario o
+VOS.dmod =  cell(VOS.rng, 1);   % Modified (de-normalized; *field dem) del
+VOS.tim =   zeros(VOS.rng, 1);  % Time (CPU) to run
+VOS.obj =   zeros(VOS.rng, 1);  % Objective function value
+VOS.sat =   zeros(VOS.rng, 1);  % Average demand satisfaction
+VOS.cost =  zeros(VOS.rng, 1);  % Solution cost
 
 % Read
-for index = 1:alpharng
+for index = 1:VOS.rng
     fprintf('Reading %i\n', index)
     
-    VOS.x{index} = CppPlexFileRead([p 'VorMod_outx_'	...
+    VOS.x{index} = CppPlexFileRead([p 'VorMod_outx_'    ...
         num2str(index) '.dat']);
-    VOS.del{index} = CppPlexFileRead([p 'VorMod_outdel_'	...
+    VOS.del{index} = CppPlexFileRead([p 'VorMod_outdel_'    ...
         num2str(index) '.dat']);
     VOS.del_mod{index} = VOS.del{index} *	...
         (sum(sum(field.field)) * scale * pix_dist^2);
-    VOS.tim(index) = CppPlexFileRead([p 'VorMod_outtim_'	...
+    VOS.tim(index) = CppPlexFileRead([p 'VorMod_outtim_'    ...
         num2str(index) '.dat']);
-    VOS.obj(index) = CppPlexFileRead([p 'VorMod_outopt_'	...
+    VOS.obj(index) = CppPlexFileRead([p 'VorMod_outopt_'    ...
         num2str(index) '.dat']);
-    VOS.sat(index) = satis(VOS.del_mod{index}, demand);
+    VOS.sat(index) = satis(VOS.dmod{index}, demand);
     VOS.cost(index) = sum(VOS.x{index});
 end
 

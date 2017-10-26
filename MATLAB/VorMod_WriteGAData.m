@@ -14,7 +14,7 @@ tic;
 if ctrl_wd_dat_ga
     log_form = ['%0' num2str(ceil(log10(betarng + 1))) 'u'];
 	for iter = 1:betarng
-		fileID = fopen([cpfnappxeval '\Vormod_' num2str(iter, log_form) '.dat'], 'W');
+		fileID = fopen(['C++ Vormod\Results\' timestamp '\VorAppxEval\Vormod_' num2str(iter, log_form) '.dat'], 'W');
 		
 		% Header
 		fprintf(fileID, ...
