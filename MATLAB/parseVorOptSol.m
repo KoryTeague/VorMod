@@ -17,12 +17,20 @@ p = ['C++ Vormod\Results\' timestamp '\VorOptSol\'];
 % Variable Definition
 clear 'VOS'
 
-VOS.x = cell(alpharng, 1);
-VOS.del = cell(alpharng, 1);
-VOS.del_mod = cell(alpharng, 1);
-VOS.tim = zeros(alpharng, 1);
-VOS.obj = zeros(alpharng, 1);
-VOS.sat = zeros(alpharng, 1);
+VOS.alpha = alpha;
+VOS.rng =   alpharng;
+VOS.id =    timestamp;
+VOS.S =     num_BS;
+VOS.M =     num_points;
+VOS.O =     num_real;
+VOS.src =   [];                 % Source computer CPLEX ran on
+VOS.x =     cell(alpharng, 1);  %
+VOS.del =   cell(alpharng, 1);
+VOS.dmod =  cell(alpharng, 1);
+VOS.tim =   zeros(alpharng, 1);
+VOS.obj =   zeros(alpharng, 1);
+VOS.sat =   zeros(alpharng, 1);
+VOS.cost =  zeros(alpharng, 1);
 
 % Read
 for index = 1:alpharng
@@ -39,10 +47,11 @@ for index = 1:alpharng
     VOS.obj(index) = CppPlexFileRead([p 'VorMod_outopt_'	...
         num2str(index) '.dat']);
     VOS.sat(index) = satis(VOS.del_mod{index}, demand);
+    VOS.cost(index) = sum(VOS.x{index});
 end
 
 % Save
 save(['C++ Vormod\Results\' timestamp '\VOSres_'    ...
     strrep(num2str(alpha(1)), '.', '_') '-' ...
     strrep(num2str(alpha(2) - alpha(1)), '.', '_') '-'  ...
-    strrep(num2str(alpha(end)), '.', '_')], 'alpha', 'alpharng', 'VOS');
+    strrep(num2str(alpha(end)), '.', '_')], 'VOS');
