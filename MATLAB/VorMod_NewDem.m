@@ -2,16 +2,9 @@
 % and Approximation (MATLAB GA) solutions.  Writes new data to VorOptEval
 % and VorAppxEval folders for evaluation
 
-%{
-id      id of original set it belongs to
-id2     id of new set it adds to old set
-S
-M
-O
-PPP
-%}
-
 %% Control Parameters
+ctrl_nd_dat_opt = 1;        % Write Opt data to file
+ctrl_nd_dat_ga = 1;         % Write GA data to file
 
 % Resources
 num_points =    60;
