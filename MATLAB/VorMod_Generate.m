@@ -29,7 +29,7 @@ cput_start = cputime;
 tic;
 
 %% Generate Log-Normal Field
-field = lnfield(omega, L, cols, rows, loc, sca);
+field = LNField(omega, L, cols, rows, loc, sca);
 if ctrl_gen_fig_LNSurf
     figure(1)
     hold off

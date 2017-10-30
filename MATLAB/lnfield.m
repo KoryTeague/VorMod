@@ -1,13 +1,13 @@
-classdef lnfield
-    %LNFIELD Class defining a 2D continuous-domain log-normal field
+classdef LNField
+    %LNField Class defining a 2D continuous-domain log-normal field
     %   Constructors:
-    %       obj = LNFIELD() generates an LNFIELD object with default
+    %       obj = LNField() generates an LNField object with default
     %           parameters
-    %       The following each define the LNFIELD object with specified
+    %       The following each define the LNField object with specified
     %           parameters; otherwise default
-    %       obj = LNFIELD(omega, depth)
-    %       obj = LNFIELD(omega, depth, X, Y)
-    %       obj = LNFIELD(omega, depth, X, Y, loc, scale)
+    %       obj = LNField(omega, depth)
+    %       obj = LNField(omega, depth, X, Y)
+    %       obj = LNField(omega, depth, X, Y, loc, scale)
     %   Methods:
     %       vals = obj.pointValue(points)
     %           Returns the value of a specific point within the field.
