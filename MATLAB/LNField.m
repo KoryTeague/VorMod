@@ -6,8 +6,8 @@ classdef LNField
     %       The following each define the LNField object with specified
     %           parameters; otherwise default
     %       obj = LNField(omega, depth)
-    %       obj = LNField(omega, depth, X, Y)
-    %       obj = LNField(omega, depth, X, Y, loc, scale)
+    %       obj = LNField(omega, depth, x, y)
+    %       obj = LNField(omega, depth, x, y, loc, scale)
     %   Methods:
     %       vals = obj.pointValue(points)
     %           Returns the value of a specific point within the field.
@@ -19,7 +19,7 @@ classdef LNField
     %               the second column are the points' y-coordinate
     %           'vals' is a M-length column vector, with each element
     %               as the value of the corresponding point in points
-    %       obj = obj.setParam(...)
+    %       obj = obj.setParameters(...)
     %           Sets specified parameters of the object to tune the field
     %               without changing the field's random characteristics
     %           Returns an object with new parameters and generated field
@@ -27,14 +27,14 @@ classdef LNField
     %           Inputs are in pairs, alternating between string paramater
     %               descriptor and requisite data element
     %           Valid string descriptor/data element pairs:
-    %               'X'     -   integer greater than zero
-    %               'Y'     -   integer greater than zero
-    %               'loc'   -   real number (double)
-    %               'sca'   -   real number (double) greater than zero
+    %               'x', 'X'    -   integer greater than zero
+    %               'Y', 'Y'    -   integer greater than zero
+    %               'loc'       -   real number (double)
+    %               'sca'       -   real number (double) greater than zero
     %           ex = ex.setParam('X', 10, 'Y', 10, 'loc', 0, 'sca', 1)
-    %       PPP = obj.nsPPP(mode)
-    %       PPP = obj.nsPPP(mode, pts)
-    %       PPP = obj.nsPPP(mode, pts, num_real)
+    %       PPP = obj.nonstationaryPpp(mode)
+    %       PPP = obj.nonstationaryPpp(mode, pts)
+    %       PPP = obj.nonstationaryPpp(mode, pts, num_real)
     %           Returns a PPP using the lnfield as the density function
     %           PPP is a cell array of length num_real, each element
     %               containing one realization of a non-stationary Poisson
@@ -44,7 +44,7 @@ classdef LNField
     %               first column the list of x-coordinates and the second
     %               column the list of y-coordinates.  The points all fall
     %               within the domain of the object's field (on the domain
-    %               (0, X) and (0, Y).
+    %               (0, x) and (0, y).
     %           mode is a boolean declaration, dictating the form of PPP
     %               generation
     %               mode == 0 generates a non-stationary PPP using a
@@ -58,7 +58,7 @@ classdef LNField
     %                   density dependent on the object's parameters and
     %                   the input argument pts.  With loc = 0, scale = 1,
     %                   the number of points for each realization is
-    %                   approximately X*Y*pts*1.6.
+    %                   approximately x*y*pts*1.6.
     %               mode == 1 generates a non-stationary PPP with a
     %                   specified number of points.  If a specific number
     %                   of points is required within each realization, this
@@ -122,19 +122,19 @@ classdef LNField
         depth   =   25
     end
     properties (SetAccess=private, GetAccess=private)
-        std_f
-        lamb_max
+        stdf
+        lambdaMax
     end
     properties (SetAccess=private, GetAccess=public)
         loc     =   0
         scale   =   1
-        X       =   10
-        Y       =   10
+        x       =   10
+        y       =   10
         field
-        Gfield
+        fieldGauss
     end
     methods
-        function obj=lnfield(omega, depth, varargin)
+        function obj=LNField(omega, depth, varargin)
             % varargin contains X, Y, loc, scale
             if nargin > 6
                 warning('lnfield:constructor:numArg', ...
@@ -159,8 +159,8 @@ classdef LNField
                         floor(varargin{1}) == varargin{1} && ...
                         floor(varargin{2}) == varargin{2} && ...
                         varargin{1} > 0 && varargin{2} > 0
-                    obj.X = varargin{1};
-                    obj.Y = varargin{2};
+                    obj.x = varargin{1};
+                    obj.y = varargin{2};
                 else
                     error('lnfield:constructor:incXY', ...
                         'Incorrect inputs.\nX and Y must be positive integers.\n')
@@ -195,9 +195,9 @@ classdef LNField
                     repmat(obj.phi, [size(points, 1), 1])) .*   ...
                 cos(points(:, 2)*obj.j +    ...
                     repmat(obj.psi, [size(points, 1), 1])), 2) / obj.depth;
-            vals = exp(obj.scale * vals / obj.std_f + obj.loc);
+            vals = exp(obj.scale * vals / obj.stdf + obj.loc);
         end
-        function obj=setParam(obj, varargin)
+        function obj=setParameters(obj, varargin)
             % Changes parameters of the lnfield which would require
             % regeneration of the field.
             % Inputs are in pairs:
@@ -205,10 +205,10 @@ classdef LNField
                     % parameter to be changed
                 % Second element is the parameter's new value
             % Valid string descriptors, type, and descriptions:
-                % 'X'   -   int, x-coord extent (1:X) of lnfield domain
-                % 'Y'   -   int, y-coord extent (1:Y) of lnfield domain
-                % 'loc' -   double, location parameter of ln distribution
-                % 'sca' -   double > 0, scale parameer of ln distribution
+                % 'x', 'X'  -   int, x-coord extent (1:X) of lnfield domain
+                % 'y', 'Y'  -   int, y-coord extent (1:Y) of lnfield domain
+                % 'loc'     -   double, location parameter of ln dist
+                % 'sca'     -   double > 0, scale parameer of ln dist
             if (nargin+1)/2 ~= floor((nargin+1)/2)
                 error('lnfield:setParam:numArg', ...
                     'Incorrect number of input arguments.\nThere must be an even number of input arguments.\nArguments are included as pairs; the first element is a text descriptor of the parameter to be changed, the second element is the new value of the parameter.')
@@ -217,34 +217,34 @@ classdef LNField
                 warning('lnfield:setParam:noChange', ...
                     'No input arguments.\nNo changes made to lnfield object.\n')
             end
-            for a = 1:2:nargin-1
-                switch varargin{a}
-                    case 'X'
-                        if isnumeric(varargin{a+1}) && ...
-                                floor(varargin{a+1}) == varargin{a+1}
-                            obj.X = varargin{a+1};
+            for iArg = 1:2:nargin-1
+                switch varargin{iArg}
+                    case {'X', 'x'}
+                        if isnumeric(varargin{iArg+1}) && ...
+                                floor(varargin{iArg+1}) == varargin{iArg+1}
+                            obj.x = varargin{iArg+1};
                         else
                             error('lnfield:setParam:incArg', ...
                                 'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
                         end
-                    case 'Y'
-                        if isnumeric(varargin{a+1}) && ...
-                                floor(varargin{a+1}) == varargin{a+1}
-                            obj.Y = varargin{a+1};
+                    case {'Y', 'y'}
+                        if isnumeric(varargin{iArg+1}) && ...
+                                floor(varargin{iArg+1}) == varargin{iArg+1}
+                            obj.y = varargin{iArg+1};
                         else
                             error('lnfield:setParam:incArg', ...
                                 'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
                         end
                     case 'loc'
-                        if isnumeric(varargin{a+1})
-                            obj.loc = varargin{a+1};
+                        if isnumeric(varargin{iArg+1})
+                            obj.loc = varargin{iArg+1};
                         else
                             error('lnfield:setParam:incArg', ...
                                 'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
                         end
                     case 'sca'
-                        if isnumeric(varargin{a+1}) && varargin{a+1} > 0
-                            obj.scale = varargin{a+1};
+                        if isnumeric(varargin{iArg+1}) && varargin{iArg+1} > 0
+                            obj.scale = varargin{iArg+1};
                         else
                             error('lnfield:setParam:incArg', ...
                                 'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
@@ -256,7 +256,7 @@ classdef LNField
             end
             obj = obj.genField();
         end
-        function PPP=nsPPP(obj, mode, varargin)
+        function PPP=nonstationaryPpp(obj, mode, varargin)
             % Generates a non-stationary PPP using the log-normal field of
                 % ln field as the density function and domain.
             % varargin contains pts and num_real
@@ -275,7 +275,7 @@ classdef LNField
                     % points.
                 % The first method is the standard trimming method,
                     % generating a stationary PPP with a density of
-                    % max(max(obj.field))*obj.X*obj.Y*pts
+                    % max(max(obj.field))*obj.x*obj.y*pts
                 % This is repeated for each realization.  To get a specific
                     % number of points, generate too many (assured with a
                     % sufficiently high value of pts), and throw out any
@@ -334,7 +334,7 @@ classdef LNField
                     
                     PPP = cell(num_real, 1);
                     for real = 1:num_real
-                        PPP{real} = obj.genPPP(poissrnd(obj.lamb_max*pts*obj.X*obj.Y));
+                        PPP{real} = obj.genPpp(poissrnd(obj.lambdaMax*pts*obj.x*obj.y));
                     end
                 case 1
                     % Specific
@@ -356,7 +356,7 @@ classdef LNField
                     buffer = zeros(pts, 2);
                     ind = 0;
                     while a <= num_real
-                        tmp = obj.genPPP(pts);
+                        tmp = obj.genPpp(pts);
                         if ind + size(tmp, 1) > pts
                             PPP{a} = [buffer(1:ind, :); tmp(1:pts-ind, :)];
                             buffer(1:ind + size(tmp, 1) - pts, :) = ...
@@ -377,30 +377,30 @@ classdef LNField
     methods (Access=private)
         function obj=genField(obj)
             % Generate the lognormal field generated over the specified
-                % domain, X and Y, set for the field object
-            [x, y] = meshgrid(1:obj.X, 1:obj.Y);
+                % domain, x and y, set for the field object
+            [mx, my] = meshgrid(1:obj.x, 1:obj.y);
             points = [ ...
-                reshape(x, [obj.X*obj.Y, 1])    ...
-                reshape(y, [obj.X*obj.Y, 1])    ];
+                reshape(mx, [obj.x*obj.y, 1])    ...
+                reshape(my, [obj.x*obj.y, 1])    ];
             vals = sum(     ...
                 cos(points(:, 1)*obj.i +    ...
-                    repmat(obj.phi, [obj.X*obj.Y, 1])) .*   ...
+                    repmat(obj.phi, [obj.x*obj.y, 1])) .*   ...
                 cos(points(:, 2)*obj.j +    ...
-                    repmat(obj.psi, [obj.X*obj.Y, 1])), 2) / obj.depth;
-            obj.std_f = sqrt(var(vals));
-            vals = vals / obj.std_f;
-            obj.Gfield = reshape(vals, [obj.Y, obj.X]);
+                    repmat(obj.psi, [obj.x*obj.y, 1])), 2) / obj.depth;
+            obj.stdf = sqrt(var(vals));
+            vals = vals / obj.stdf;
+            obj.fieldGauss = reshape(vals, [obj.y, obj.x]);
             vals = exp(obj.scale * vals + obj.loc);
-            obj.field = reshape(vals, [obj.Y, obj.X]);
-            obj.lamb_max = max(max(obj.field));
+            obj.field = reshape(vals, [obj.y, obj.x]);
+            obj.lambdaMax = max(max(obj.field));
         end
-        function PPP=genPPP(obj, num_pts)
+        function PPP=genPpp(obj, num_pts)
             % Generate a set of points for a PPP, abstracted from specifics
                 % Used for public method PPP; both mode == 0 and mode == 1
             PPP = [ ...
-                obj.X*rand([num_pts, 1]),    ...
-                obj.Y*rand([num_pts, 1])     ];
-            lamb = obj.pointValue(PPP) / obj.lamb_max;
+                obj.x*rand([num_pts, 1]),    ...
+                obj.y*rand([num_pts, 1])     ];
+            lamb = obj.pointValue(PPP) / obj.lambdaMax;
             PPP(lamb <= rand(num_pts, 1), :) = NaN;
             PPP = PPP(~isnan(PPP));
             PPP = reshape(PPP, [length(PPP)/2 2]);

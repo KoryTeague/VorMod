@@ -32,10 +32,10 @@ if ctrl_nbs_dat_opt
     CppPlexFileWrite(fileID, ones(num_BS, 1), 1, '%.6e');
     % rateCap
     CppPlexFileWrite(fileID, BS_cap * ones(num_BS, 1) / ...
-        (sum(sum(field.field)) * scale * pix_dist^2), 1, '%.6e');
+        (sum(sum(Field.field)) * scale * pix_dist^2), 1, '%.6e');
     % demand
     CppPlexFileWrite(fileID, demand /   ...
-        (sum(sum(field.field)) * scale * pix_dist^2), 1, '%.6e');
+        (sum(sum(Field.field)) * scale * pix_dist^2), 1, '%.6e');
     % prob
     CppPlexFileWrite(fileID, ones(num_real, 1) / num_real, 1, '%.6e');
     % alpha
@@ -63,7 +63,7 @@ if ctrl_nbs_dat_ga
         % O
         CppPlexFileWrite(fileID, num_real, 0, '%i');
         % Capacity
-        CppPlexFileWrite(fileID, sum(sum(field.field)) * scale * pix_dist^2, ...
+        CppPlexFileWrite(fileID, sum(sum(Field.field)) * scale * pix_dist^2, ...
             0, '%.6e');
         % cost, c[rS]
         CppPlexFileWrite(fileID, ones(num_BS, 1), 1, '%.6e');

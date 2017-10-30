@@ -27,7 +27,7 @@ if ctrl_wd_dat_ga
         % O
         CppPlexFileWrite(fileID, num_real, 0, '%i');
         % Capacity
-        CppPlexFileWrite(fileID, sum(sum(field.field)) * scale * pix_dist^2, ...
+        CppPlexFileWrite(fileID, sum(sum(Field.field)) * scale * pix_dist^2, ...
             0, '%.6e');
         % cost, c[rS]
         CppPlexFileWrite(fileID, ones(num_BS, 1), 1, '%.6e');

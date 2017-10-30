@@ -24,7 +24,7 @@ for a = randperm(num_BS)
         for c = 1:cols
             BS_load(BS_ind(dist_ind(r, c))) =   ...
                 BS_load(BS_ind(dist_ind(r, c))) +   ...
-                betaval * scale * pix_dist^2 * field.field(r, c);
+                betaval * scale * pix_dist^2 * Field.field(r, c);
         end
     end
     
@@ -52,7 +52,7 @@ if fit_max_sweep > fit_max
         for c = 1:cols
             BS_load(BS_ind(dist_ind(r, c))) =   ...
                 BS_load(BS_ind(dist_ind(r, c))) +   ...
-                betaval * scale * pix_dist^2 * field.field(r, c);
+                betaval * scale * pix_dist^2 * Field.field(r, c);
         end
     end
 else

@@ -29,21 +29,21 @@ cput_start = cputime;
 tic;
 
 %% Generate Log-Normal Field
-field = LNField(omega, L, cols, rows, loc, sca);
+Field = LNField(omega, L, cols, rows, loc, sca);
 if ctrl_gen_fig_LNSurf
     figure(1)
     hold off
-    surf(field.field, 'linestyle', 'none')
+    surf(Field.field, 'linestyle', 'none')
 end
 if ctrl_gen_fig_LNSurfOver
     figure(2)
     hold off
-    surf(field.field, 'linestyle', 'none')
+    surf(Field.field, 'linestyle', 'none')
     view(0, 90)
 end
 drawnow
 
-demand = sum(sum(field.field)) * scale * pix_dist^2 / num_points * ones(num_points, 1);
+demand = sum(sum(Field.field)) * scale * pix_dist^2 / num_points * ones(num_points, 1);
 
 %% Generate BS Locations
 switch ctrl_gen_dat_BSLoc
@@ -59,7 +59,7 @@ switch ctrl_gen_dat_BSLoc
             rows*rand([num_BS, 1])], [0 cols], [0 rows]);
     case 2
         % BS locations as nsPPP (demand field)
-        BS = HilbertCurve(cell2mat(field.nsPPP(1, num_BS, 1)), [0 cols], [0 rows]);
+        BS = HilbertCurve(cell2mat(Field.nonstationaryPpp(1, num_BS, 1)), [0 cols], [0 rows]);
     otherwise
         error('Incorrect BS Location Generation Control; Exiting\n')
 end
@@ -88,7 +88,7 @@ end
 
 %% Generate Additional Data; Optimization Model
 % determine u[m][s][o]
-PPP_real = field.nsPPP(1, num_points, num_real);
+PPP_real = Field.nonstationaryPpp(1, num_points, num_real);
 u = zeros(num_points, num_BS, num_real);
 for s = 1:num_BS
     for o = 1:num_real

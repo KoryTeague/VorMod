@@ -17,7 +17,7 @@ newDem_timestamp = datestr(now, 30);
 p = ['C++ Vormod\Results\' timestamp '\VorAppxEval\'];
 
 %% Generate Demand Points and Associated Data
-PPP_new = field.nsPPP(1, num_points, num_real);
+PPP_new = Field.nonstationaryPpp(1, num_points, num_real);
 u_new = zeros(num_points, num_BS, num_real);
 for s = 1:num_BS
     for o = 1:num_real
