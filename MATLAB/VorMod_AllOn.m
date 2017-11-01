@@ -22,7 +22,7 @@ BS_load = zeros(num_BS, 1);
 for r = 1:rows
     for c = 1:cols
         BS_load(dist_ind(r, c)) = BS_load(dist_ind(r, c)) + ...
-            scale * pix_dist^2 * field.field(r, c);
+            scale * pix_dist^2 * Field.field(r, c);
     end
 end
 

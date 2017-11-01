@@ -45,7 +45,7 @@ for a = 1:num_mems
         for c = 1:cols
             BS_load(BS_ind(dist_ind(r, c))) =   ...
                 BS_load(BS_ind(dist_ind(r, c))) +   ...
-                betaval * scale * pix_dist^2 * field.field(r, c);
+                betaval * scale * pix_dist^2 * Field.field(r, c);
         end
     end
     
@@ -148,7 +148,7 @@ for gen = 1:max_gen
             for c = 1:cols
                 BS_load(BS_ind(dist_ind(r, c))) =   ...
                     BS_load(BS_ind(dist_ind(r, c))) +   ...
-                    betaval * scale * pix_dist^2 * field.field(r, c);
+                    betaval * scale * pix_dist^2 * Field.field(r, c);
             end
         end
         
@@ -169,7 +169,7 @@ for gen = 1:max_gen
         for c = 1:cols
             BS_load(BS_ind(dist_ind(r, c))) = ...
                 BS_load(BS_ind(dist_ind(r, c))) + ...
-                betaval * scale * pix_dist^2 * field.field(r, c);
+                betaval * scale * pix_dist^2 * Field.field(r, c);
         end
     end
     fprintf('Maximum Fitness:\n\t%.6e with %d active BS\n', ...
