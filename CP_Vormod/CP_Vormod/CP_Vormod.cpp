@@ -2,10 +2,6 @@
 // Kory Teague
 // Creates the model as defined by Mohammad for paper; deterministic equivalent program to MIP
 
-/*
-Modify/write another version which will loop model through successive iterations/values of alpha	
-*/
-
 #include "stdafx.h"
 #include <iostream>
 #include "CP_Vormod.h"
