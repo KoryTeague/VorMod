@@ -29,6 +29,8 @@ end
 u_new(u_new > BS_rng / pix_dist) = 0;
 u_new(u_new ~= 0) = 1;
 
+demand = sum(sum(Field.field)) * scale * pix_dist^2 / num_points * ones(num_points, 1);
+
 %% Create Evaluation Data Set
 if ~exist('evalSet', 'var')
     evalSet = struct('id', timestamp, 'id2', newDem_timestamp,  ...

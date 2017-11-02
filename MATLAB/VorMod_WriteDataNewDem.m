@@ -13,19 +13,19 @@ if ~exist('ctrl_nd_dat_ga', 'var')
     ctrl_nd_dat_ga = 1;         % Write data; GA
 end
 
-log_form = ['%0' num2str(ceil(log10(betarng + 1))) 'u'];
-
 %% Start Write Data Timer
 cput_start = cputime;
 tic;
 
 %% Write Optimization Model Data
+log_form = ['%0' num2str(ceil(log10(alpharng + 1))) 'u'];
+
 if ctrl_nd_dat_opt
-    for iter = 1:alpharng
-        fileID = fopen(['C++ Vormod\Results\' timestamp '\VorOptEval\Vormod.dat'], 'W');
+    for iter = 1:10:alpharng
+        fileID = fopen(['C++ Vormod\Results\' timestamp '\VorOptEval\Vormod' num2str(iter, log_form) '.dat'], 'W');
         % Header
         fprintf(fileID, ...
-            '// Kory Teague, CPLEX Voronoi Model .dat file\n// %s BS = %u\n', ...
+            '// Kory Teague, CPLEX Voronoi Model Evaluation .dat file\n\n// %s BS = %u\n', ...
             timestamp, ctrl_gen_dat_BSLoc);
         % S
         CppPlexFileWrite(fileID, num_BS, 0, '%i');
@@ -33,20 +33,19 @@ if ctrl_nd_dat_opt
         CppPlexFileWrite(fileID, num_points, 0, '%i');
         % O
         CppPlexFileWrite(fileID, num_real, 0, '%i');
-        % Capacity - report as 1, and apply to other variables
-        CppPlexFileWrite(fileID, 1, 0, '%.6e');
+        % Capacity
+        CppPlexFileWrite(fileID, sum(sum(Field.field)) * scale * pix_dist^2, ...
+            0, '%.6e');
         % cost
         CppPlexFileWrite(fileID, ones(num_BS, 1), 1, '%.6e');
         % rateCap
-        CppPlexFileWrite(fileID, BS_cap * ones(num_BS, 1) / ...
-            (sum(sum(Field.field)) * scale * pix_dist^2), 1, '%.6e');
+        CppPlexFileWrite(fileID, BS_cap * ones(num_BS, 1), 1, '%.6e');
         % demand
-        CppPlexFileWrite(fileID, demand /   ...
-            (sum(sum(Field.field)) * scale * pix_dist^2), 1, '%.6e');
+        CppPlexFileWrite(fileID, demand, 1, '%.6e');
         % prob
         CppPlexFileWrite(fileID, ones(num_real, 1) / num_real, 1, '%.6e');
-        % alpha
-        CppPlexFileWrite(fileID, alpha, 1, '%.6e');
+        % x
+        CppPlexFileWrite(fileID, VOS.x{iter}, 1, '%i');
         % rateNorm
         CppPlexFileWrite(fileID, u, 3, '%i');
 
@@ -55,6 +54,8 @@ if ctrl_nd_dat_opt
 end
 
 %% Write Genetic Algorithm Data
+log_form = ['%0' num2str(ceil(log10(betarng + 1))) 'u'];
+
 if ctrl_nd_dat_ga
 	for iter = 1:betarng
 		fileID = fopen(['C++ Vormod\Results\' timestamp '\VorAppxEval\Vormod_' num2str(iter, log_form) '.dat'], 'W');
@@ -75,11 +76,11 @@ if ctrl_nd_dat_ga
         % cost, c[rS]
         CppPlexFileWrite(fileID, ones(num_BS, 1), 1, '%.6e');
         % rateCap, r[rS]
-        CppPlexFileWrite(fileID, BS_cap * ones(num_BS, 1), 1, '%1.5f');
+        CppPlexFileWrite(fileID, BS_cap * ones(num_BS, 1), 1, '%.6e');
         % demand, d[rM]
-        CppPlexFileWrite(fileID, demand, 1, '%1.5f');
+        CppPlexFileWrite(fileID, demand, 1, '%.6e');
         % prob, p[rO]
-        CppPlexFileWrite(fileID, ones(num_real, 1) / num_real, 1, '%1.5f');
+        CppPlexFileWrite(fileID, ones(num_real, 1) / num_real, 1, '%.6e');
         % x, x[rS]
         CppPlexFileWrite(fileID, beta_x{iter}, 1, '%i');
         % rateNorm, u[rM][rS][rO]
