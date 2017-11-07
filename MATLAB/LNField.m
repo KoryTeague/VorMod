@@ -373,6 +373,39 @@ classdef LNField
                         'mode must be a boolean value of 0 or 1.\n')
             end
         end
+        function drawField(obj, varargin)
+            % Draws a the associated field using surf
+            % varargin contains fig and surf properties
+                % fig is the figure handle to draw the field on
+                % properties are the assorted graphing properties
+                    % These properties are in gropus, with the first item
+                    % being the property name and the second the property
+                    % value
+                    % See surf for details of settable properties
+                    % Can also set the view by calling the property name
+                    % 'view' and followed by the new two argins begin
+                    % associated values
+            if nargin < 2
+                figure
+            else
+                figure(varargin{1})
+            end
+            s = surf(obj.field, 'linestyle', 'none');
+            view(0, 90)
+            title('Log-Normal Distributed Demand Field')
+            xlabel('(m)')
+            ylabel('(m)')
+            iArg = 2;
+            while iArg < nargin-1
+                if strcmp(varargin{iArg}, 'view')
+                    view(varargin{iArg+1}, varargin{iArg+2})
+                    iArg = iArg + 3;
+                else
+                    set(s, varargin{iArg}, varargin{iArg+1})
+                    iArg = iArg + 2;
+                end
+            end
+        end
     end
     methods (Access=private)
         function obj=genField(obj)
