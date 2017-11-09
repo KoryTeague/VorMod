@@ -9,18 +9,26 @@ mkdir('C++ Vormod\Results', timestamp)
 save(['C++ Vormod\Results\' timestamp '\_Old.mat'])
 clearvars -except timestamp
 
-%% Setup Parameters
-% Field
-FIELD_N_ROWS = 100;
-FIELD_N_COLS = 100;
-FIELD_PIXEL_DISTANCE = 20;
-FIELD_OMEGA = 2*pi/30;
-FIELD_LOCATION = 0;
-FIELD_SCALE = 1;
-FIELD_DEPTH_L = 50;
-FIELD_SCALING_COEFFICIENT = 2;
-
-% Resources
+% Master (This) Script
+ctrl_mas_log_setup = true;
+ctrl_mas_log_gen = true;
+ctrl_mas_log_all = true;
+ctrl_mas_log_ga = true;
+ctrl_mas_log_final = true;
+% Generate
+ctrl_gen_fig_LNSurf = false;
+ctrl_gen_fig_LNSurfOver = false;
+ctrl_gen_dat_BSLoc = 1;         % 0 = grid; 1 = PPP; 2 = nsPPP
+ctrl_gen_fig_BSScat = false;
+ctrl_gen_fig_BSVor = false;
+ctrl_gen_fig_PPPDem = false;
+% Gen Alg
+ctrl_ga_fig_vor = false;
+ctrl_ga_fig_grad = false;
+ctrl_ga_dat_xover = 0;          % 0 = uniform; n>0 = n-point
+% Write Data
+ctrl_wd_dat_opt = true;
+ctrl_wd_dat_ga = true;
 
 %% Model Startup Scripts
 VorMod_Setup                    % Setup/Set Initial Data Parameters
