@@ -5,22 +5,29 @@
 
 %% Control Parameters
 timestamp = datestr(now, 30);
-mkdir('C++ Vormod\Results', timestamp)
-save(['C++ Vormod\Results\' timestamp '\_Old.mat'])
+mkdir('Results', timestamp)
+save(['Results\' timestamp '\_Old.mat'])
 clearvars -except timestamp
 
-%% Setup Parameters
-% Field
-FIELD_N_ROWS = 100;
-FIELD_N_COLS = 100;
-FIELD_PIXEL_DISTANCE = 20;
-FIELD_OMEGA = 2*pi/30;
-FIELD_LOCATION = 0;
-FIELD_SCALE = 1;
-FIELD_DEPTH_L = 50;
-FIELD_SCALING_COEFFICIENT = 2;
+%% Field Parameters
+% Field Demand
+FIELD_NUM_ROWS =                100;        % (100)
+FIELD_NUM_COLS =                100;        % (100)
+FIELD_PIXEL_DISTANCE =          20;         % (20)
+FIELD_OMEGA =                   2*pi/30;    % (2*pi/30)
+FIELD_LOCATION =                0;          % (0)
+FIELD_SCALE =                   1;          % (1)
+FIELD_DEPTH =                   50;         % (50)
+FIELD_SCALING_COEFFICIENT =     2;          % (2)
 
-% Resources
+% Field Resources
+FIELD_NUM_BASE_STATIONS =       60;         % (60)
+FIELD_BASE_STATION_CAPACITY =   1.5e6;      % (1.5e6)
+FIELD_BASE_STATION_RANGE =      500;        % (500)
+
+% Data Set Settings
+nDemandPoints =                 60;         % (60)
+nDemandRealizations =           20;         % (20)
 
 %% Model Startup Scripts
 VorMod_Setup                    % Setup/Set Initial Data Parameters
