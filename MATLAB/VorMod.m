@@ -69,7 +69,7 @@ end
 
 %% ----------------------------
 % Begin Depreciated
-
+%{
 %% Model Startup Scripts
 VorMod_Setup                    % Setup/Set Initial Data Parameters
 if ctrl_mas_log_setup
@@ -119,3 +119,4 @@ VorMod_WriteData                % Write Data to Files
 if ctrl_mas_log_final
     save(['C++ Vormod\Results\' timestamp '\_Final.mat'])
 end
+%}
