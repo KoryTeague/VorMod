@@ -86,6 +86,23 @@ classdef LNField
     %           num_real is a positive integer indictating the number of
     %               realizations to generate.  PPP is a cell array of
     %               length num_real.
+    %       obj.drawField(...)
+    %           Draws a visualization of the log-normal field to an
+    %               associated figure
+    %           With no input parameters, draws the field using the surf
+    %               function on the next unused figure.
+    %           First input parameter is a given figure to draw to.  E.g.:
+    %               obj.drawField(figure(1)) or obj.drawField(figure, ...)
+    %           Following input parameters are settings added to the surf
+    %               function.  Inputs are in pairs or triplets.  Valid
+    %               pairs are first the setting being modified as a string,
+    %               then the value of the setting.  See surf function for
+    %               details on these parameters. Valid triple is modifying
+    %               the perspective of the surf, and is first the setting
+    %               'view', followed by the parameters that would be passed
+    %               to the view function (e.g. 0, 90).
+    %               Example:    obj.drawField(figure, 'view', 0, 90)
+    %               or          obj.drawField(figure, 'linestyle', 'none')
     %   Parameters:
     %       OMEGA is the maximum angular frequency of the sinusoids used to
     %           generate the field.  This directly correlates to the
