@@ -11,6 +11,10 @@ clearvars -except timestamp
 
 %% Control Parameters
 CTRL_DRAW_LNFIELD =                 true;       % (true)
+CTRL_GENERATE_BS_LOCATIONS =        1;          % (1)
+CTRL_DRAW_BS_SCATTER =              true;       % (true)
+CTRL_DRAW_BS_VORONOI =              true;       % (true)
+CTRL_DRAW_DEMAND_POINTS =           true;       % (true)
 
 %% Field Parameters
 % Field Demand
@@ -29,12 +33,12 @@ FIELD_BASE_STATION_CAPACITY =       1.5e6;      % (1.5e6)
 FIELD_BASE_STATION_RANGE =          500;        % (500)
 
 % Data Set Settings
-CP_LEARN_NUM_DEMAND_POINTS =        60;         % (60)
-CP_LEARN_NUM_DEMAND_REALIZATIONS =  20;         % (20)
+CP_NUM_SOL_DEMAND_POINTS =          60;         % (60); For sol/learning set
+CP_NUM_SOL_DEMAND_REALIZATIONS =    20;         % (20); For sol/learning set
 
 %% CPLEX Settings
-alpha =                             5:5:100;    % (5:5:100)
-alphaLength =                       length(alpha);
+SolutionSet.alpha =                 5:5:100;    % (5:5:100)
+SolutionSet.alphaLength =           length(SolutionSet.alpha);
 
 %% GA Settings
 % Fitness Costs
@@ -58,14 +62,119 @@ GA_NUM_GENERATION_ELITISM =         4;          % (2)
 GA_BETA =                           0.5:0.1:2.5;
                                                 % (0.5:0.1:2.5)
 GA_BETA_LENGTH =                    length(GA_BETA);
-                                                % (length(GA_BETA))
 
 %% Generate Log-Normal Field
-Field = LNField(FIELD_OMEGA, FIELD_DEPTH, FIELD_NUM_ROWS, ...
-    FIELD_NUM_COLS, FIELD_LOCATION, FIELD_SCALE);
+Field.DemandField = LNField(FIELD_OMEGA, FIELD_DEPTH, FIELD_NUM_ROWS, ...
+    FIELD_NUM_COLS, FIELD_LOCATION, FIELD_SCALE, ...
+    FIELD_SCALING_COEFFICIENT * FIELD_PIXEL_DISTANCE^2);
+
 if CTRL_DRAW_LNFIELD
-    Field.drawField(figure(1))
+    Field.DemandField.drawField(figure(1))
 end
+
+SolutionSet.demandArray = Field.DemandField.demand / ...
+    CP_NUM_SOL_DEMAND_POINTS * ones(CP_NUM_SOL_DEMAND_POINTS, 1);
+
+%% Generate BS Locations
+switch CTRL_GENERATE_BS_LOCATIONS
+    case 0
+        % BS locations as a grid
+        % Changes the number of base stations if number is not square
+        dist = ceil(sqrt(FIELD_NUM_BASE_STATIONS));
+        FIELD_NUM_BASE_STATIONS = dist^2;
+        Field.bsLocations = HilbertCurve( ...
+            [kron(((1:dist)' - 0.5) * FIELD_NUM_COLS / dist,    ...
+            ones(dist, 1)), ...
+            repmat(((1:dist)' - 0.5) * FIELD_NUM_ROWS / dist,   ...
+            dist, 1)],  ...
+            [0 FIELD_NUM_COLS], [0 FIELD_NUM_ROWS]);
+        
+        clearvars dist
+    case 1
+        % BS locations as PPP
+        Field.bsLocations = HilbertCurve( ...
+            [FIELD_NUM_COLS * rand([FIELD_NUM_BASE_STATIONS, 1]),   ...
+            FIELD_NUM_ROWS * rand([FIELD_NUM_BASE_STATIONS, 1])],   ...
+            [0 FIELD_NUM_COLS], [0 FIELD_NUM_ROWS]);
+    case 2
+        % BS locations as nsPPP, as per Field
+        Field.bsLocations = HilbertCurve(cell2mat(    ...
+            Field.DemandField.nonstationaryPpp( ...
+            1, FIELD_NUM_BASE_STATIONS, 1)),    ...
+            [0 FIELD_NUM_COLS], [0 FIELD_NUM_ROWS]);
+    otherwise
+        error('Incorrect BS Location Generation Control; Exiting\n')
+end
+
+if CTRL_DRAW_BS_SCATTER
+    figure(2)
+    hold off
+    scatter(Field.bsLocations(:, 1), Field.bsLocations(:, 2), '.')
+    axis([0 FIELD_NUM_COLS 0 FIELD_NUM_ROWS])
+end
+
+if CTRL_DRAW_BS_VORONOI
+    figure(3)
+    hold off
+    if size(Field.bsLocations, 1) >= 3
+        voronoi(Field.bsLocations(:, 1), Field.bsLocations(:, 2))
+        axis([0 FIELD_NUM_COLS 0 FIELD_NUM_ROWS])
+    else
+        warning('Not enough points to draw Voronoi tesselation.\nNot Drawing.\n')
+    end
+end
+
+drawnow
+
+%% Generate Distances
+Field.pixelDistances = zeros(FIELD_NUM_ROWS, FIELD_NUM_COLS,  ...
+    FIELD_NUM_BASE_STATIONS);
+for iRows = 1:FIELD_NUM_ROWS
+    for jCols = 1:FIELD_NUM_COLS
+        Field.pixelDistances(iRows, jCols, :) = FIELD_PIXEL_DISTANCE *  ...
+            sqrt((Field.bsLocations(:, 1) - jCols) .^ 2 + ...
+            (Field.bsLocations(:, 2) - iRows) .^ 2);
+    end
+end
+
+clearvars iRows jCols
+
+%% Generate Demand Point Realizations and Rate Normalization (u)
+SolutionSet.demandPoints = Field.DemandField.nonstationaryPpp(1,    ...
+    CP_NUM_SOL_DEMAND_POINTS, CP_NUM_SOL_DEMAND_REALIZATIONS);
+SolutionSet.rateNorm = zeros(CP_NUM_SOL_DEMAND_POINTS,  ...
+    FIELD_NUM_BASE_STATIONS, CP_NUM_SOL_DEMAND_REALIZATIONS);
+for iBaseStation = 1:FIELD_NUM_BASE_STATIONS
+    for jRealization = 1:CP_NUM_SOL_DEMAND_REALIZATIONS
+        SolutionSet.rateNorm(:, iBaseStation, jRealization) = sqrt( ...
+            (SolutionSet.demandPoints{jRealization}(:, 1) - ...
+            Field.bsLocations(iBaseStation, 1)).^2 +    ...
+            (SolutionSet.demandPoints{jRealization}(:, 2) - ...
+            Field.bsLocations(iBaseStation, 2)).^2);
+    end
+end
+SolutionSet.rateNorm(SolutionSet.rateNorm > ...
+    FIELD_BASE_STATION_RANGE / FIELD_PIXEL_DISTANCE) = 0;
+SolutionSet.rateNorm(SolutionSet.rateNorm ~= 0) = 1;
+
+clearvars iBaseStation jRealization
+
+if CTRL_DRAW_DEMAND_POINTS
+    figure(4)
+    hold off
+    scatter(SolutionSet.demandPoints{1}(:, 1),  ...
+        SolutionSet.demandPoints{1}(:, 2), '.');
+    hold on
+    for iRealization = 2:CP_NUM_SOL_DEMAND_REALIZATIONS
+        scatter(SolutionSet.demandPoints{iRealization}(:, 1),   ...
+            SolutionSet.demandPoints{iRealization}(:, 2), '.');
+    end
+    hold off
+    
+    clearvars iRealization
+end
+
+drawnow
 
 %% ----------------------------
 % Begin Depreciated

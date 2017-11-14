@@ -7,7 +7,8 @@ classdef LNField
     %           parameters; otherwise default
     %       obj = LNField(omega, depth)
     %       obj = LNField(omega, depth, x, y)
-    %       obj = LNField(omega, depth, x, y, loc, scale)
+    %       obj = LNField(omega, depth, x, y, location, scale)
+    %       obj = LNField(omega, depth, x, y, location, scale, demandMod)
     %   Methods:
     %       vals = obj.pointValue(points)
     %           Returns the value of a specific point within the field.
@@ -29,9 +30,15 @@ classdef LNField
     %           Valid string descriptor/data element pairs:
     %               'x', 'X'    -   integer greater than zero
     %               'Y', 'Y'    -   integer greater than zero
-    %               'loc'       -   real number (double)
-    %               'sca'       -   real number (double) greater than zero
-    %           ex = ex.setParam('X', 10, 'Y', 10, 'loc', 0, 'sca', 1)
+    %               'loc', 'location'
+    %                           -   real number (double)
+    %               'sca', 'scale'
+    %                           -   real number (double) greater than zero
+    %               'dmod', 'demandMod'
+    %                           -   real number (double) nonnegative
+    %           ex = ex.setParam('X', 10, 'Y', 10, 'loc', 0, 'sca', 1, 'dmod', 1)
+    %           ex = ex.setParam('x', 100, 'y', 100, 'location', 5, ...
+    %               'scale', 1.5, 'demandMod', 0)
     %       PPP = obj.nonstationaryPpp(mode)
     %       PPP = obj.nonstationaryPpp(mode, pts)
     %       PPP = obj.nonstationaryPpp(mode, pts, num_real)
@@ -78,7 +85,7 @@ classdef LNField
     %                   acts as a scalar, proportionally scaling the max
     %                   value fo the field when generating the stationary
     %                   PPP.  Approximate number of points generated per
-    %                   realization: X*Y*pts*1.6, for loc = 0, scale = 1.
+    %                   realization: x*y*pts*1.6, for loc = 0, scale = 1.
     %               For mode == 1:
     %                   the number of points each realization will be
     %                   returned with.  Each element of PPP will be a
@@ -126,7 +133,12 @@ classdef LNField
     %           loc: number
     %           scale: positive number
     %       FIELD is the log-normal field, represented as a X by Y matrix.
-    %           To view, try surf(obj.field).
+    %           To view, run obj.drawField(...)
+    %       FIELDGAUSS is the gaussian (normal) predecessor of FIELD,
+    %           represented as a X by Y matrix.
+    %           FIELD is log(FIELD * scale + loc)
+    %       DEMAND is the sum total demand of the whole field.
+    %       DEMANDMOD is a multiplicative modifier applied to DEMAND
     
     properties (SetAccess=immutable, GetAccess=private)
         i
@@ -135,40 +147,50 @@ classdef LNField
         psi
     end
     properties (SetAccess=immutable, GetAccess=public)
-        omega   =   2*pi/30
-        depth   =   25
+        omega       =   2*pi/30
+        depth       =   25
     end
     properties (SetAccess=private, GetAccess=private)
         stdf
         lambdaMax
     end
     properties (SetAccess=private, GetAccess=public)
-        loc     =   0
-        scale   =   1
-        x       =   10
-        y       =   10
+        location    =   0
+        scale       =   1
+        x           =   10
+        y           =   10
         field
         fieldGauss
+        demand
+        demandMod   =   1
     end
     methods
         function obj=LNField(omega, depth, varargin)
-            % varargin contains X, Y, loc, scale
-            if nargin > 6
+            % varargin contains x, y, location, scale, demandMod
+            if nargin > 7
                 warning('lnfield:constructor:numArg', ...
                     'Too many arguments detected.\n.')
             end
+            if nargin == 7
+                if isnumeric(varargin{5}) && varargin{5} >= 0
+                    obj.demandMod = varargin{5};
+                else
+                    error('lnfield:constructor:incDemMod', ...
+                        'Incorrect input.\ndemandMod must be a nonnegative number.\n')
+                end
+            end
             if nargin == 5 || nargin == 3
                 warning('lnfield:constructor:numArg', ...
-                    'Expecting an even number of arguments.\n')
+                    'Expecting an different number of arguments.\n')
             end
-            if nargin == 6
+            if nargin >= 6
                 if isnumeric(varargin{3}) && isnumeric(varargin{4}) && ...
                         varargin{4} > 0
-                    obj.loc = varargin{3};
+                    obj.location = varargin{3};
                     obj.scale = varargin{4};
                 else
                     error('lnfield:constructor:incLocSca', ...
-                        'Incorrect inputs.\nloc must be a number.\nscale must be a positive number.\n')
+                        'Incorrect inputs.\nlocation must be a number.\nscale must be a positive number.\n')
                 end
             end
             if nargin >= 4
@@ -212,7 +234,7 @@ classdef LNField
                     repmat(obj.phi, [size(points, 1), 1])) .*   ...
                 cos(points(:, 2)*obj.j +    ...
                     repmat(obj.psi, [size(points, 1), 1])), 2) / obj.depth;
-            vals = exp(obj.scale * vals / obj.stdf + obj.loc);
+            vals = exp(obj.scale * vals / obj.stdf + obj.location);
         end
         function obj=setParameters(obj, varargin)
             % Changes parameters of the lnfield which would require
@@ -224,8 +246,12 @@ classdef LNField
             % Valid string descriptors, type, and descriptions:
                 % 'x', 'X'  -   int, x-coord extent (1:X) of lnfield domain
                 % 'y', 'Y'  -   int, y-coord extent (1:Y) of lnfield domain
-                % 'loc'     -   double, location parameter of ln dist
-                % 'sca'     -   double > 0, scale parameer of ln dist
+                % 'loc', 'location'
+                %           -   double, location parameter of ln dist
+                % 'sca', 'scale'
+                %           -   double > 0, scale parameer of ln dist
+                % 'dmod', 'demandMod'
+                %           -   double >= 0, demand parameter modifier
             if (nargin+1)/2 ~= floor((nargin+1)/2)
                 error('lnfield:setParam:numArg', ...
                     'Incorrect number of input arguments.\nThere must be an even number of input arguments.\nArguments are included as pairs; the first element is a text descriptor of the parameter to be changed, the second element is the new value of the parameter.')
@@ -252,16 +278,23 @@ classdef LNField
                             error('lnfield:setParam:incArg', ...
                                 'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
                         end
-                    case 'loc'
+                    case {'loc', 'location'}
                         if isnumeric(varargin{iArg+1})
-                            obj.loc = varargin{iArg+1};
+                            obj.location = varargin{iArg+1};
                         else
                             error('lnfield:setParam:incArg', ...
                                 'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
                         end
-                    case 'sca'
+                    case {'sca', 'scale'}
                         if isnumeric(varargin{iArg+1}) && varargin{iArg+1} > 0
                             obj.scale = varargin{iArg+1};
+                        else
+                            error('lnfield:setParam:incArg', ...
+                                'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
+                        end
+                    case {'dmod', 'demandMod'}
+                        if isnumeric(varargin{iArg+1}) && varargin{iArg+1} >= 0
+                            obj.demandMod = varargin{iArg+1};
                         else
                             error('lnfield:setParam:incArg', ...
                                 'Incorrect input.\nInputs must be valid alternating string descriptors and value declarations.\n')
@@ -407,6 +440,7 @@ classdef LNField
             else
                 figure(varargin{1})
             end
+            hold off
             s = surf(obj.field, 'linestyle', 'none');
             view(0, 90)
             title('Log-Normal Distributed Demand Field')
@@ -422,6 +456,7 @@ classdef LNField
                     iArg = iArg + 2;
                 end
             end
+            drawnow
         end
     end
     methods (Access=private)
@@ -440,9 +475,10 @@ classdef LNField
             obj.stdf = sqrt(var(vals));
             vals = vals / obj.stdf;
             obj.fieldGauss = reshape(vals, [obj.y, obj.x]);
-            vals = exp(obj.scale * vals + obj.loc);
+            vals = exp(obj.scale * vals + obj.location);
             obj.field = reshape(vals, [obj.y, obj.x]);
             obj.lambdaMax = max(max(obj.field));
+            obj.demand = sum(sum(obj.field)) * obj.demandMod;
         end
         function PPP=genPpp(obj, num_pts)
             % Generate a set of points for a PPP, abstracted from specifics
