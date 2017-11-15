@@ -1,7 +1,9 @@
-% Compilation script which runs all of the Voronoi model through to
-% generating associated data, running the Voronoi GA approximation, writing
-% the data for running the two-stage opimization problem and evaluate the
-% GA solution via the second-stage problem.
+% Rewritten VorMod.m
+% Kory Teague
+% Instead of a compilation script, this is written to be a bit more
+% "kosher".  Instead of a long list of direct, global scripts, this is
+% written to encapsulate better, utilize MATLAB's OOP capabilities, and
+% match to a consistent programming style.
 
 %% Initialization
 timestamp = datestr(now, 30);
@@ -149,9 +151,9 @@ for iBaseStation = 1:FIELD_NUM_BASE_STATIONS
     for jRealization = 1:CP_NUM_SOL_DEMAND_REALIZATIONS
         SolutionSet.rateNorm(:, iBaseStation, jRealization) = sqrt( ...
             (SolutionSet.demandPoints{jRealization}(:, 1) - ...
-            Field.bsLocations(iBaseStation, 1)).^2 +    ...
+            Field.bsLocations(iBaseStation, 1)) .^ 2 +  ...
             (SolutionSet.demandPoints{jRealization}(:, 2) - ...
-            Field.bsLocations(iBaseStation, 2)).^2);
+            Field.bsLocations(iBaseStation, 2)) .^ 2);
     end
 end
 SolutionSet.rateNorm(SolutionSet.rateNorm > ...
