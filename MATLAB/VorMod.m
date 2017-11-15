@@ -15,6 +15,7 @@ CTRL_GENERATE_BS_LOCATIONS =        1;          % (1)
 CTRL_DRAW_BS_SCATTER =              true;       % (true)
 CTRL_DRAW_BS_VORONOI =              true;       % (true)
 CTRL_DRAW_DEMAND_POINTS =           true;       % (true)
+CTRL_ALLON_TEST_EXIT =              false;      % (false)
 
 %% Field Parameters
 % Field Demand
@@ -175,6 +176,62 @@ if CTRL_DRAW_DEMAND_POINTS
 end
 
 drawnow
+
+%% Test "All On" Criteria
+% Coverage
+[distanceMin, distanceMinIndex] = min(Field.pixelDistances, [], 3);
+if any(any(distanceMin >    ...
+        (FIELD_BASE_STATION_RANGE - FIELD_PIXEL_DISTANCE/2 * sqrt(2))))
+    % Somewhere is not satisfied by the BS deployment
+    if CTRL_ALLON_TEST_EXIT
+        error('All-On Scenario Insufficient Coverage; Exiting\n')
+    else
+        warning('All-On Scenario Insufficient Coverage')
+    end
+else
+    fprintf('All-On Scenario Sufficient Coverage; Continuing\n')
+end
+
+% Beta = 1 Capacity
+baseStationLoad = zeros(FIELD_NUM_BASE_STATIONS, 1);
+for iRows = 1:FIELD_NUM_ROWS
+    for jCols = 1:FIELD_NUM_COLS
+        baseStationLoad(distanceMinIndex(iRows, jCols)) =   ...
+            baseStationLoad(distanceMinIndex(iRows, jCols)) +   ...
+            FIELD_SCALING_COEFFICIENT * FIELD_PIXEL_DISTANCE^2 *    ...
+            Field.DemandField.field(iRows, jCols);
+    end
+end
+
+if any(baseStationLoad > FIELD_BASE_STATION_CAPACITY)
+    if CTRL_ALLON_TEST_EXIT
+        error('Beta = 1 All-On Scenario Insufficient Resource Capacity; Exiting\n')
+    else
+        warning('Beta = 1 All-On Scenario Insufficient Resource Capacity')
+    end
+else
+    fprintf('Beta = 1 All-On Scenario Sufficient Resource Capacity; Continuing\n')
+end
+
+% Maximum Beta
+% Old notes:
+% Beta is a scalar that modifies the demand of the demand field without
+% changing the probabilities and overall demand of the optimization
+% problem.  Effectively, beta is a scalar to the demand field as the
+% genetic algorithm observes it without actually modifying the total amount
+% of demand, causing the GA to otherwise "overallocate" in order to account
+% for variance of inidividual demand sources (like MSs and other users)
+% To this end, the load on any BS (BS_load) is scaled by beta.
+% Find max betamax s.t. BS_load * betamax <= BS_cap for all s in S
+% Or: betamax == min(BS_cap ./ BS_load)
+fprintf('Maximum Beta for All-On Scenario Satisfaction: %1.6f\n',   ...
+    min(FIELD_BASE_STATION_CAPACITY ./ baseStationLoad));
+pause
+
+clearvars distanceMin distanceMinIndex iRows jCols
+
+%% Genetic Algorithm
+
 
 %% ----------------------------
 % Begin Depreciated
