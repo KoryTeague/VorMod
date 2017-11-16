@@ -62,6 +62,7 @@ GA_NUM_MEMBER_HALT =                100;        % (100)
 % Other Settings
 GA_NUM_GENERATION_MEMBERS =         80;         % (60)
 GA_NUM_GENERATION_ELITISM =         4;          % (2)
+GA_UNIQUENESS =                     1;          % (1)
 GA_BETA =                           0.5:0.1:2.5;
                                                 % (0.5:0.1:2.5)
 GA_BETA_LENGTH =                    length(GA_BETA);
@@ -236,7 +237,10 @@ pause
 clearvars distanceMin distanceMinIndex iRows jCols
 
 %% Genetic Algorithm
-
+GeneticAlgorithm = VorModGeneticAlgorithm(GA_NUM_GENERATION_MEMBERS,    ...
+    FIELD_NUM_BASE_STATIONS, Field, 'beta', GA_BETA(1), 'range',    ...
+    FIELD_BASE_STATION_RANGE, 'elite', GA_NUM_GENERATION_ELITISM,   ...
+    'unique', GA_UNIQUENESS);
 
 %% ----------------------------
 % Begin Depreciated

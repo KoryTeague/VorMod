@@ -50,6 +50,9 @@ classdef (Abstract) GeneticAlgorithm < handle
     properties (SetAccess=private, GetAccess=public)
         nGenerations    =   0
     end
+    properties (Access=private)
+        newMembers
+    end
     properties (Access=protected)
         members
     end
@@ -115,6 +118,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                 end
             end
             obj.initializemembers();
+            obj.newMembers = obj.members;
         end
     end
     methods (Access=private)
@@ -133,6 +137,31 @@ classdef (Abstract) GeneticAlgorithm < handle
             else
                 obj.members = randi(2, obj.nMembers, obj.memberLength) - 1;
             end
+        end
+    end
+    methods (Access=public)
+        function onegeneration(obj)
+            % Find new members
+                % Elitism
+            obj.newMembers(1:obj.nElitism, :) = ...
+                obj.findfittestmembers(obj.nElitism);
+                % Selection
+                    % Crossover
+                    % Mutation
+                    % Uniqueness
+            % Save new members
+            obj.members = obj.newMembers;
+            % Calculate fitness of new members
+        end
+        function fittestMembers = findfittestmembers(obj, num)
+            % Find the fittest members in obj.members
+            % num is how many members to return
+            % fittestMembers is a 2D array (num x memberLength) containing
+                % the num fittest members.  That is, if members is sorted
+                % in order from highest fitness to lowest fitness,
+                % (sortedMembers), then:
+                % fittestMembers = sortedMembers(1:num, :);
+            
         end
     end
     methods (Abstract)

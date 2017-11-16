@@ -1,5 +1,5 @@
-classdef VMGeneticAlgorithm < GeneticAlgorithm
-    %VMGeneticAlgorithm Voronoi Model subclass of Genetic Algorithm
+classdef VorModGeneticAlgorithm < GeneticAlgorithm
+    %VorModGeneticAlgorithm Voronoi Model subclass of Genetic Algorithm
     %   Detailed explanation goes here
     %   Properties:
     %       beta is a weighting factor for weighing how much capacity the 
@@ -16,8 +16,8 @@ classdef VMGeneticAlgorithm < GeneticAlgorithm
     end
     
     methods
-        function obj=VMGeneticAlgorithm(nMembers, memberLength, Field,  ...
-                varargin)
+        function obj=VorModGeneticAlgorithm(nMembers, memberLength, ...
+                Field, varargin)
             % Subclass constructor
             % Adds support for Field and possible additional properties
             % (beta and rangeCost)
