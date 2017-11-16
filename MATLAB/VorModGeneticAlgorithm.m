@@ -11,8 +11,10 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
         Field                   % Field struct from VorMod.m
         rangeCost
     end
-    properties (Access=protected)
+    properties (Access=public)
+        % protected
         memberFitness
+        fitnessRoulette
     end
     
     methods
@@ -76,6 +78,11 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                     obj.rangeCost * sum(sum(distanceMin >	...
                     obj.Field.baseStationRange -    ...
                     sqrt(2)/2 * obj.Field.pixelWidth)));
+            end
+            obj.fitnessRoulette(1) = obj.memberFitness(1);
+            for iMem = 2:obj.nMembers
+                obj.fitnessRoulette(iMem) = obj.memberFitness(iMem) +   ...
+                    obj.fitnessRoulette(iMem - 1);
             end
         end
     end

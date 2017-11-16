@@ -46,18 +46,24 @@ classdef (Abstract) GeneticAlgorithm < handle
         memberLength
         nElitism        =   0
         flagUniqueness  =   0
+        rateCrossover   =   0.5
+        rateMutation    =   0.5
     end
     properties (SetAccess=private, GetAccess=public)
         nGenerations    =   0
     end
-    properties (Access=private)
+    properties (Access=public)
+        % private
         newMembers
     end
-    properties (Access=protected)
+    properties (Access=public)
+        % protected
         members
     end
-    properties (Access=protected, Abstract)
+    properties (Access=public, Abstract)
+        % protected
         memberFitness
+        fitnessRoulette
     end
     
     methods
@@ -72,6 +78,10 @@ classdef (Abstract) GeneticAlgorithm < handle
                 %                       -   integer nonnegative
                 % 'flagUniqueness', 'Uniqueness', 'Unique', 'uniqueness',
                 %   'unique'            -   binary; 0 is off, >0 is on (1)
+                % 'rateCrossover', 'Crossover', 'crossover'
+                %                       -   double over [0, 1]
+                % 'rateMutation', 'Mutation', 'mutation'
+                %                       -   double over [0, 1]
             % Parse Inputs
             if isnumeric(nMembers)
                 obj.nMembers = nMembers;
@@ -112,6 +122,32 @@ classdef (Abstract) GeneticAlgorithm < handle
                             error('geneticalgorithm:constructor:invVal',    ...
                                 'Invalid Value.\nUniqueness is binary.\n')
                         end
+                    case {'rateCrossover', 'Crossover', 'crossover'}
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0 && ...
+                                    varargin{iArg+1} <= 1
+                                obj.rateCrossover = varargin{iArg+1};
+                            else
+                                error('geneticalgorithm:constructor:invVal',    ...
+                                    'Invalid Value.\nrateCrossover is a double over [0, 1].\n')
+                            end
+                        else
+                            error('geneticalgorithm:constructor:invVal',    ...
+                                'Invalid Value.\nrateCrossover is a double over [0, 1].\n')
+                        end
+                    case {'rateMutation', 'Mutation', 'mutation'}
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0 && ...
+                                    varargin{iArg+1} <= 1
+                                obj.rateMutation = varargin{iArg+1};
+                            else
+                                error('geneticalgorithm:constructor:invVal',    ...
+                                    'Invalid Value.\nrateMutation is a double over [0, 1].\n')
+                            end
+                        else
+                            error('geneticalgorithm:constructor:invVal',    ...
+                                'Invalid Value.\nrateMutation is a double over [0, 1].\n')
+                        end
                     otherwise
                         error('geneticalgorithm:constructor:invFlag',   ...
                             'Invalid Flag.\nSee documentation for valid flags.\n')
@@ -138,6 +174,33 @@ classdef (Abstract) GeneticAlgorithm < handle
                 obj.members = randi(2, obj.nMembers, obj.memberLength) - 1;
             end
         end
+        function selectionIndices = selectmembers(obj)
+            % Performs selection.  Selects two members using the roulette
+                % method.
+            randomSelect = obj.fitnessRoulette(end) * rand(1, 2);
+            selectionIndices(1) = find(obj.fitnessRoulette ==   ...
+                min(obj.fitnessRoulette(obj.fitnessRoulette >=  ...
+                randomSelect(1))));
+            selectionIndices(2) = find(obj.fitnessRoulette ==   ...
+                min(obj.fitnessRoulette(obj.fitnessRoulette >=  ...
+                randomSelect(2))));
+        end
+        function selectionMembers = uniformcrossover(obj, selectionIndices)
+            if rand(1) < obj.rateCrossover
+                selectionMembers = zeros(2, obj.memberLength);
+                for iBit = 1:obj.memberLength
+                    if rand(1) > 0.5
+                        selectionMembers(:, iBit) = ...
+                            obj.members(selectionIndices, iBit);
+                    else
+                        selectionMembers(:, iBit) = ...
+                            obj.members(selectionIndices(2:-1:1), iBit);
+                    end
+                end
+            else
+                selectionMembers = obj.members(selectionIndices, :);
+            end
+        end
     end
     methods (Access=public)
         function onegeneration(obj)
@@ -146,7 +209,11 @@ classdef (Abstract) GeneticAlgorithm < handle
             obj.newMembers(1:obj.nElitism, :) = ...
                 obj.findfittestmembers(obj.nElitism);
                 % Selection
+            iMem = obj.nElitism + 1;
+            while iMem <= obj.nMembers
                     % Crossover
+                selectionMembers = obj.uniformcrossover(obj.selectmembers);
+            end
                     % Mutation
                     % Uniqueness
             % Save new members
@@ -161,7 +228,8 @@ classdef (Abstract) GeneticAlgorithm < handle
                 % in order from highest fitness to lowest fitness,
                 % (sortedMembers), then:
                 % fittestMembers = sortedMembers(1:num, :);
-            
+            [~, fitIndex] = sort(obj.memberFitness, 'descend');
+            fittestMembers = obj.members(fitIndex(1:num), :);
         end
     end
     methods (Abstract)
