@@ -1,5 +1,5 @@
-classdef GeneticAlgorithm < handle
-    %GENETICALGORITHM 
+classdef (Abstract) GeneticAlgorithm < handle
+    %GeneticAlgorithm 
     %   Binary Genetic Algorithm superclass
     %   Contains all the necessary data and functions to run a standard
     %   binary genetic algorithm.  This includes generating the initial
@@ -10,18 +10,51 @@ classdef GeneticAlgorithm < handle
     %   condition.
     %   Constructors:
     %       obj = GeneticAlgorithm(nMembers, memberLength, ...)
+    %   Methods:
+    %   Properties:
+    %       nMembers is the number of members within each generation
+    %       memberLength is the length (in bits) of each members'
+    %           chromosome
+    %       nElitism is a nonnegative integer detailing whether and to what
+    %           extend the genetic algorithm practices Elitism.  If
+    %           nElitism is 0, then the genetic algorithm does not use
+    %           elitism, if it is a positive integer, then, before
+    %           selection begins on a new generation, the fittest nElitism
+    %           members of the previous generation are added to the next
+    %           generation unchanged (i.e. without selection or mutation).
+    %       flagUniqueness is a binary flag declaring whether the members
+    %           within a given generation are all simulataneously unique.
+    %           If set to 0, a generation may contain multiple members with
+    %           the same chromosome.  If set to 1, all members have unique
+    %           chromosomes.
+    %       nGenerations is a counter of the number of (new) generations 
+    %           that the genetic algorithm has processed since creation
+    %       members is a binary two-dimensional array
+    %           (nMembers x memberLength)
+    %           members is the collection of active members within the
+    %           current (nGenerations)th generation.  Each row is an
+    %           individual member of the generation, while each column is
+    %           an element present within the chromosomes.
+    %       memberFitness is an array containing the overall fitness of the
+    %           current (nGenerations)th generation's members.  The ith
+    %           element of memberFitness corresponds to the fitness of the
+    %           ith member of the generation (that is, of the ith row of
+    %           members)
     
     properties (SetAccess=immutable, GetAccess=public)
         nMembers
         memberLength
         nElitism        =   0
+        flagUniqueness  =   0
     end
     properties (SetAccess=private, GetAccess=public)
         nGenerations    =   0
-        flagUniqueness  =   0
     end
-    properties (Access=private)
+    properties (Access=protected)
         members
+    end
+    properties (Access=protected, Abstract)
+        memberFitness
     end
     
     methods
@@ -32,7 +65,7 @@ classdef GeneticAlgorithm < handle
                 % first element of pair is string label of flag to be set
                 % second element is the value the flag is to be set to
             % Valid flags to set:
-                % 'nElitism', 'Elitism', 'Elite', 'elitism', 'elite'    -
+                % 'nElitism', 'Elitism', 'Elite', 'elitism', 'elite'
                 %                       -   integer nonnegative
                 % 'flagUniqueness', 'Uniqueness', 'Unique', 'uniqueness',
                 %   'unique'            -   binary; 0 is off, >0 is on (1)
@@ -81,11 +114,11 @@ classdef GeneticAlgorithm < handle
                             'Invalid Flag.\nSee documentation for valid flags.\n')
                 end
             end
-            obj.generateMembers();
+            obj.initializemembers();
         end
     end
     methods (Access=private)
-        function generateMembers(obj)
+        function initializemembers(obj)
             if obj.flagUniqueness
                 obj.members = zeros(obj.nMembers, obj.memberLength);
                 iMem = 1;
@@ -102,5 +135,9 @@ classdef GeneticAlgorithm < handle
             end
         end
     end
-    
+    methods (Abstract)
+        computefitness(obj)
+        % Compute/Calculate fitness heuristic for the present members
+        % Run after each operation that changes the group of members
+    end
 end

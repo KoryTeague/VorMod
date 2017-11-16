@@ -23,7 +23,7 @@ CTRL_ALLON_TEST_EXIT =              false;      % (false)
 % Field Demand
 FIELD_NUM_ROWS =                    100;        % (100)
 FIELD_NUM_COLS =                    100;        % (100)
-FIELD_PIXEL_DISTANCE =              20;         % (20)
+FIELD_PIXEL_WIDTH =                 20;         % (20)
 FIELD_OMEGA =                       2*pi/30;    % (2*pi/30)
 FIELD_LOCATION =                    0;          % (0)
 FIELD_SCALE =                       1;          % (1)
@@ -69,11 +69,14 @@ GA_BETA_LENGTH =                    length(GA_BETA);
 %% Generate Log-Normal Field
 Field.DemandField = LNField(FIELD_OMEGA, FIELD_DEPTH, FIELD_NUM_ROWS, ...
     FIELD_NUM_COLS, FIELD_LOCATION, FIELD_SCALE, ...
-    FIELD_SCALING_COEFFICIENT * FIELD_PIXEL_DISTANCE^2);
+    FIELD_SCALING_COEFFICIENT * FIELD_PIXEL_WIDTH^2);
 
 if CTRL_DRAW_LNFIELD
-    Field.DemandField.drawField(figure(1))
+    Field.DemandField.dispfield(figure(1))
 end
+
+Field.baseStationRange = FIELD_BASE_STATION_RANGE;
+Field.pixelWidth = FIELD_PIXEL_WIDTH;
 
 SolutionSet.demandArray = Field.DemandField.demand / ...
     CP_NUM_SOL_DEMAND_POINTS * ones(CP_NUM_SOL_DEMAND_POINTS, 1);
@@ -102,7 +105,7 @@ switch CTRL_GENERATE_BS_LOCATIONS
     case 2
         % BS locations as nsPPP, as per Field
         Field.bsLocations = HilbertCurve(cell2mat(    ...
-            Field.DemandField.nonstationaryPpp( ...
+            Field.DemandField.nonstationaryppp( ...
             1, FIELD_NUM_BASE_STATIONS, 1)),    ...
             [0 FIELD_NUM_COLS], [0 FIELD_NUM_ROWS]);
     otherwise
@@ -134,7 +137,7 @@ Field.pixelDistances = zeros(FIELD_NUM_ROWS, FIELD_NUM_COLS,  ...
     FIELD_NUM_BASE_STATIONS);
 for iRows = 1:FIELD_NUM_ROWS
     for jCols = 1:FIELD_NUM_COLS
-        Field.pixelDistances(iRows, jCols, :) = FIELD_PIXEL_DISTANCE *  ...
+        Field.pixelDistances(iRows, jCols, :) = FIELD_PIXEL_WIDTH *  ...
             sqrt((Field.bsLocations(:, 1) - jCols) .^ 2 + ...
             (Field.bsLocations(:, 2) - iRows) .^ 2);
     end
@@ -143,7 +146,7 @@ end
 clearvars iRows jCols
 
 %% Generate Demand Point Realizations and Rate Normalization (u)
-SolutionSet.demandPoints = Field.DemandField.nonstationaryPpp(1,    ...
+SolutionSet.demandPoints = Field.DemandField.nonstationaryppp(1,    ...
     CP_NUM_SOL_DEMAND_POINTS, CP_NUM_SOL_DEMAND_REALIZATIONS);
 SolutionSet.rateNorm = zeros(CP_NUM_SOL_DEMAND_POINTS,  ...
     FIELD_NUM_BASE_STATIONS, CP_NUM_SOL_DEMAND_REALIZATIONS);
@@ -157,7 +160,7 @@ for iBaseStation = 1:FIELD_NUM_BASE_STATIONS
     end
 end
 SolutionSet.rateNorm(SolutionSet.rateNorm > ...
-    FIELD_BASE_STATION_RANGE / FIELD_PIXEL_DISTANCE) = 0;
+    FIELD_BASE_STATION_RANGE / FIELD_PIXEL_WIDTH) = 0;
 SolutionSet.rateNorm(SolutionSet.rateNorm ~= 0) = 1;
 
 clearvars iBaseStation jRealization
@@ -183,7 +186,7 @@ drawnow
 % Coverage
 [distanceMin, distanceMinIndex] = min(Field.pixelDistances, [], 3);
 if any(any(distanceMin >    ...
-        (FIELD_BASE_STATION_RANGE - FIELD_PIXEL_DISTANCE/2 * sqrt(2))))
+        (FIELD_BASE_STATION_RANGE - FIELD_PIXEL_WIDTH/2 * sqrt(2))))
     % Somewhere is not satisfied by the BS deployment
     if CTRL_ALLON_TEST_EXIT
         error('All-On Scenario Insufficient Coverage; Exiting\n')
@@ -200,7 +203,7 @@ for iRows = 1:FIELD_NUM_ROWS
     for jCols = 1:FIELD_NUM_COLS
         baseStationLoad(distanceMinIndex(iRows, jCols)) =   ...
             baseStationLoad(distanceMinIndex(iRows, jCols)) +   ...
-            FIELD_SCALING_COEFFICIENT * FIELD_PIXEL_DISTANCE^2 *    ...
+            FIELD_SCALING_COEFFICIENT * FIELD_PIXEL_WIDTH^2 *    ...
             Field.DemandField.field(iRows, jCols);
     end
 end
