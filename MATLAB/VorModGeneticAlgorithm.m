@@ -9,6 +9,7 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
     properties (SetAccess=private, GetAccess=public)
         beta
         Field                   % Field struct from VorMod.m
+        demandField
         rangeCost
         capacityCost
     end
@@ -59,6 +60,9 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             obj@GeneticAlgorithm(nMembers, memberLength, args{:});
             obj.Field = Field;
             obj.beta = beta;
+            obj.demandField = obj.beta *    ...
+                obj.Field.DemandField.demandMod *   ...
+                obj.Field.DemandField.field;
             obj.rangeCost = rangeCost;
             obj.capacityCost = capacityCost;
             obj.computefitness();
@@ -76,13 +80,11 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 baseStationLoad = zeros(obj.memberLength, 1);
                 for iRows = 1:size(obj.Field.pixelDistances, 1)
                     for jCols = 1:size(obj.Field.pixelDistances, 2)
-                        baseStationLoad(baseStationIndices( ...
-                            distanceMinIndex(iRows, jCols))) =  ...
-                            baseStationLoad(baseStationIndices( ...
-                            distanceMinIndex(iRows, jCols))) +  ...
-                            obj.beta *  ...
-                            obj.Field.DemandField.demandMod *   ...
-                            obj.Field.DemandField.field(iRows, jCols);
+                        index = baseStationIndices(	...
+                            distanceMinIndex(iRows, jCols));
+                        baseStationLoad(index) =    ...
+                            baseStationLoad(index) +    ...
+                            obj.demandField(iRows, jCols);
                     end
                 end
                 %{
