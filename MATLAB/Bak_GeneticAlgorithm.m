@@ -178,7 +178,7 @@ classdef (Abstract) GeneticAlgorithm < handle
             obj.newMembers = obj.members;
         end
         function onegeneration(obj)
-            obj.nGenerations = obj.nGenerations + 1;
+            obj
             % Find new members
                 % Elitism
             obj.newMembers(1:obj.nElitism, :) = ...

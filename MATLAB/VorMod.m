@@ -77,6 +77,7 @@ if CTRL_DRAW_LNFIELD
 end
 
 Field.baseStationRange = FIELD_BASE_STATION_RANGE;
+Field.baseStationCapacity = FIELD_BASE_STATION_CAPACITY;
 Field.pixelWidth = FIELD_PIXEL_WIDTH;
 
 SolutionSet.demandArray = Field.DemandField.demand / ...

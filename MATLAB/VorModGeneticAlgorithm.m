@@ -10,11 +10,11 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
         beta
         Field                   % Field struct from VorMod.m
         rangeCost
+        capacityCost
     end
     properties (Access=public)
         % protected
         memberFitness
-        fitnessRoulette
     end
     
     methods
@@ -28,10 +28,13 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 % second element is the value the flag is to be set to
             % Additional varargin flags:
                 % 'Beta', 'beta'        -   nonnegative
-                % 'rangeCost', 'rangecost', 'range', 'Range'
+                % 'rangeCost', 'rangecost', 'Range', 'range'
+                %                       -   nonnegative
+                % 'capacityCost', 'capacitycost', 'Capacity', 'capacity'
                 %                       -   nonnegative
             beta = 1;
             rangeCost = 1;
+            capacityCost = 1;
             args = {};
             for iArg = 1:2:nargin-3
                 switch varargin{iArg}
@@ -43,6 +46,11 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                         if isnumeric(varargin{iArg+1})
                             rangeCost = varargin{iArg+1};
                         end
+                    case {'capacityCost', 'capacitycost', 'Capacity',   ...
+                            'capacity'}
+                        if isnumeric(varargin{iArg+1})
+                            capacityCost = varargin{iArg+1};
+                        end
                     otherwise
                         args{end+1} = varargin{iArg};
                         args{end+1} = varargin{iArg+1};
@@ -52,8 +60,12 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             obj.Field = Field;
             obj.beta = beta;
             obj.rangeCost = rangeCost;
+            obj.capacityCost = capacityCost;
             obj.computefitness();
         end
+    end
+    
+    methods (Access=protected)
         function computefitness(obj)
             obj.memberFitness = zeros(obj.nMembers, 1);
             for iMem = 1:obj.nMembers
@@ -73,17 +85,24 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                             obj.Field.DemandField.field(iRows, jCols);
                     end
                 end
+                %{
                 obj.memberFitness(iMem) = 1 / ( ...
                     sum(obj.members(iMem, :)) + ...
                     obj.rangeCost * sum(sum(distanceMin >	...
                     obj.Field.baseStationRange -    ...
                     sqrt(2)/2 * obj.Field.pixelWidth)));
+                %}
+                obj.memberFitness(iMem) = 1 / ( ...
+                    sum(obj.members(iMem, :)) + ...
+                    obj.rangeCost * sum(sum(distanceMin >	...
+                    obj.Field.baseStationRange -    ...
+                    sqrt(2)/2 * obj.Field.pixelWidth)) +    ...
+                    ((1 + obj.capacityCost)^obj.nGenerations - 1) * ...
+                    sum(max(0, baseStationLoad -    ...
+                    obj.Field.baseStationCapacity)) /   ...
+                    obj.Field.baseStationCapacity);
             end
-            obj.fitnessRoulette(1) = obj.memberFitness(1);
-            for iMem = 2:obj.nMembers
-                obj.fitnessRoulette(iMem) = obj.memberFitness(iMem) +   ...
-                    obj.fitnessRoulette(iMem - 1);
-            end
+            obj.computeroulette();
         end
     end
     
