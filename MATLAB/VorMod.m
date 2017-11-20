@@ -201,13 +201,10 @@ end
 
 % Beta = 1 Capacity
 baseStationLoad = zeros(FIELD_NUM_BASE_STATIONS, 1);
-for iRows = 1:FIELD_NUM_ROWS
-    for jCols = 1:FIELD_NUM_COLS
-        baseStationLoad(distanceMinIndex(iRows, jCols)) =   ...
-            baseStationLoad(distanceMinIndex(iRows, jCols)) +   ...
-            FIELD_SCALING_COEFFICIENT * FIELD_PIXEL_WIDTH^2 *    ...
-            Field.DemandField.field(iRows, jCols);
-    end
+for iResource = 1:FIELD_NUM_BASE_STATIONS
+    baseStationLoad(iResource) =    ...
+        sum(Field.DemandField.demandMod *   ...
+        Field.DemandField.field(distanceMinIndex == iResource));
 end
 
 if any(baseStationLoad > FIELD_BASE_STATION_CAPACITY)
@@ -243,6 +240,8 @@ GeneticAlgorithm = VorModGeneticAlgorithm(GA_NUM_GENERATION_MEMBERS,    ...
     FIELD_BASE_STATION_RANGE, 'elite', GA_NUM_GENERATION_ELITISM,   ...
     'unique', GA_UNIQUENESS, 'crossover', GA_CROSSOVER_RATE,    ...
     'mutation', GA_MUTATION_RATE);
+
+
 
 %% ----------------------------
 % Begin Depreciated
