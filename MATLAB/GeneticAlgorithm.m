@@ -207,16 +207,24 @@ classdef (Abstract) GeneticAlgorithm < handle
             % Calculate fitness of new members
             obj.computefitness()
         end
-        function fittestMembers = findfittestmembers(obj, num)
+        function varargout = findfittestmembers(obj, num)
             % Find the fittest members in obj.members
             % num is how many members to return
+            % varargout can contain up to two elements: fittestMembers and
+                % fittestIndex
             % fittestMembers is a 2D array (num x memberLength) containing
                 % the num fittest members.  That is, if members is sorted
                 % in order from highest fitness to lowest fitness,
                 % (sortedMembers), then:
                 % fittestMembers = sortedMembers(1:num, :);
+            % fittestIndex is a vector (length num) containing the index of
+                % the fittest members (as reported in fittestMembers)
+                % within obj.members
             [~, fitIndex] = sort(obj.memberFitness, 'descend');
-            fittestMembers = obj.members(fitIndex(1:num), :);
+            varargout{1} = obj.members(fitIndex(1:num), :);
+            if nargout == 2
+                varargout{2} = fitIndex(1:num);
+            end
         end
     end
     methods (Access=private)

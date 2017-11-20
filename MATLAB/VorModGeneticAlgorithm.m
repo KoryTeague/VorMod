@@ -5,9 +5,34 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
     %       beta is a weighting factor for weighing how much capacity the 
     %           genetic algorithm is to provide a given solution's
     %           allocation.  Assume '1' if not set.  Should be nonnegative.
+    %       Field is a struct compiled within the VorMod script which holds
+    %           important data for the field.  The Field contains:
+    %           DemandField, an LNField object detailing the field
+    %           baseStationRange, the range of each base station; the
+    %               network is currently a homogeneous network, so it's a
+    %               single value.
+    %           baseStationCapacity, the capacity of each base station; the
+    %               network is currently a homogeneous network, so it's a
+    %               single value.
+    %           pixelWidth, the width (in some distance such as meters) of
+    %               a pixel in the field.
+    %           bsLocations, a 2xnMembers matrix detailing the locations of
+    %               the base stations with regards to the field.  The first
+    %               column are x-coordinates, the second, y-.
+    %           pixelDistances, a pre-calculated matrix (3D; rows x cols x
+    %               base stations) detailing the distances from each pixel
+    %               to each base station.
+    %       demandField is a precalculated version of
+    %           obj.Field.DemandField.field, weighted according to
+    %           obj.Field.demandField.demandMod and obj.beta.  Additional
+    %           memory usage to offset computation cost for computing
+    %           fitness.
+    %       rangeCost is the additional fitness cost for locations being
+    %           out of range of available base stations.  Nonnegative
+    %       capacityCost is the additional fitness cost for a base station
+    %           (resource) being over-allocated.  Nonnegative
     
     properties (SetAccess=private, GetAccess=public)
-        beta
         Field                   % Field struct from VorMod.m
         demandField
         rangeCost
@@ -16,6 +41,9 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
     properties (Access=public)
         % protected
         memberFitness
+    end
+    properties (Access=public)
+        beta
     end
     
     methods
