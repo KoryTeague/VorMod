@@ -32,8 +32,12 @@ FIELD_SCALING_COEFFICIENT =         2;          % (2)
 
 % Field Resources
 FIELD_NUM_BASE_STATIONS =           60;         % (60)
-FIELD_BASE_STATION_CAPACITY =       1.5e6;      % (1.5e6)
-FIELD_BASE_STATION_RANGE =          500;        % (500)
+FIELD_BASE_STATION_CAPACITY =       1.5e6 * ...
+    ones(FIELD_NUM_BASE_STATIONS, 1);           % (1.5e6)
+FIELD_BASE_STATION_RANGE =          500 *   ...
+    ones(FIELD_NUM_BASE_STATIONS, 1);           % (500)
+FIELD_BASE_STATION_COST =           1 *     ...
+    ones(FIELD_NUM_BASE_STATIONS, 1);           % (1)
 
 % Data Set Settings
 CP_NUM_SOL_DEMAND_POINTS =          60;         % (60); For sol/learning set
@@ -50,7 +54,7 @@ FITNESS_OVERRANGE_COST =            3;          % (3)
 
 % Probability Rates
 GA_CROSSOVER_RATE =                 0.7;        % (0.7)
-GA_MUTATION_RATE =                  1/FIELD_NUM_BASE_STATIONS;
+GA_MUTATION_RATE =                  1 / FIELD_NUM_BASE_STATIONS;
                                             % (1/FIELD_NUM_BASE_STATIONS)
                                             
 % Generation Limits
@@ -76,8 +80,9 @@ if CTRL_DRAW_LNFIELD
     Field.DemandField.dispfield(figure(1))
 end
 
-Field.baseStationRange = FIELD_BASE_STATION_RANGE;
 Field.baseStationCapacity = FIELD_BASE_STATION_CAPACITY;
+Field.baseStationRange = FIELD_BASE_STATION_RANGE;
+Field.baseStationCost = FIELD_BASE_STATION_COST;
 Field.pixelWidth = FIELD_PIXEL_WIDTH;
 
 SolutionSet.demandArray = Field.DemandField.demand / ...
@@ -185,10 +190,21 @@ end
 drawnow
 
 %% Test "All On" Criteria
-% Coverage
+% Prep
 [distanceMin, distanceMinIndex] = min(Field.pixelDistances, [], 3);
-if any(any(distanceMin >    ...
-        (FIELD_BASE_STATION_RANGE - FIELD_PIXEL_WIDTH/2 * sqrt(2))))
+baseStationMaxRange = zeros(size(distanceMin));
+baseStationLoad = zeros(FIELD_NUM_BASE_STATIONS, 1);
+for iResource = 1:FIELD_NUM_BASE_STATIONS
+    baseStationMaxRange(distanceMinIndex == iResource) =    ...
+        FIELD_BASE_STATION_RANGE(iResource) -   ...
+        (FIELD_PIXEL_WIDTH/2 * sqrt(2));
+    baseStationLoad(iResource) =    ...
+        sum(Field.DemandField.demandMod *   ...
+        Field.DemandField.field(distanceMinIndex == iResource));
+end
+
+% Coverage
+if any(any(distanceMin > baseStationMaxRange))
     % Somewhere is not satisfied by the BS deployment
     if CTRL_ALLON_TEST_EXIT
         error('All-On Scenario Insufficient Coverage; Exiting\n')
@@ -200,14 +216,8 @@ else
 end
 
 % Beta = 1 Capacity
-baseStationLoad = zeros(FIELD_NUM_BASE_STATIONS, 1);
-for iResource = 1:FIELD_NUM_BASE_STATIONS
-    baseStationLoad(iResource) =    ...
-        sum(Field.DemandField.demandMod *   ...
-        Field.DemandField.field(distanceMinIndex == iResource));
-end
-
 if any(baseStationLoad > FIELD_BASE_STATION_CAPACITY)
+    % Some resource/base station is over allocated
     if CTRL_ALLON_TEST_EXIT
         error('Beta = 1 All-On Scenario Insufficient Resource Capacity; Exiting\n')
     else
@@ -230,16 +240,18 @@ end
 % Or: betamax == min(BS_cap ./ BS_load)
 fprintf('Maximum Beta for All-On Scenario Satisfaction: %1.6f\n',   ...
     min(FIELD_BASE_STATION_CAPACITY ./ baseStationLoad));
-pause
 
-clearvars distanceMin distanceMinIndex iRows jCols
+clearvars distanceMin distanceMinIndex baseStationMaxRange  ...
+    baseStationLoad iResource
+
+pause
 
 %% Genetic Algorithm
 GeneticAlgorithm = VorModGeneticAlgorithm(GA_NUM_GENERATION_MEMBERS,    ...
     FIELD_NUM_BASE_STATIONS, Field, 'beta', GA_BETA(1), 'range',    ...
-    FIELD_BASE_STATION_RANGE, 'elite', GA_NUM_GENERATION_ELITISM,   ...
-    'unique', GA_UNIQUENESS, 'crossover', GA_CROSSOVER_RATE,    ...
-    'mutation', GA_MUTATION_RATE);
+    FITNESS_OVERRANGE_COST, 'capacity', FITNESS_OVERCAPACITY_COST,  ...
+    'elite', GA_NUM_GENERATION_ELITISM, 'unique', GA_UNIQUENESS,    ...
+    'crossover', GA_CROSSOVER_RATE, 'mutation', GA_MUTATION_RATE);
 
 
 
