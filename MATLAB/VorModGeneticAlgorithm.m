@@ -37,6 +37,8 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
         demandField
         rangeCost
         capacityCost
+        flagReport
+        flagReportGraph
     end
     properties (Access=public)
         % protected
@@ -61,24 +63,79 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 %                       -   nonnegative
                 % 'capacityCost', 'capacitycost', 'Capacity', 'capacity'
                 %                       -   nonnegative
+                % 'flagReport', 'Report', 'report'
+                %                       -   boolean
+                % 'flagReportGraph', 'ReportGraph', 'Graph', 'graph'
+                %                       -   boolean
             beta = 1;
             rangeCost = 1;
             capacityCost = 1;
+            flagReport = 1;
+            flagReportGraph = 1;
             args = {};
             for iArg = 1:2:nargin-3
                 switch varargin{iArg}
                     case {'Beta', 'beta'}
                         if isnumeric(varargin{iArg+1})
-                            beta = varargin{iArg+1};
+                            if varargin{iArg+1} >= 0
+                                beta = varargin{iArg+1};
+                            else
+                                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                    'Invalid Value.\nbeta is a nonnegative value.\n')
+                            end
+                        else
+                            error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                'Invalid Valuie.\nbeta is a nonnegative value.\n')
                         end
                     case {'rangeCost', 'rangecost', 'range', 'Range'}
                         if isnumeric(varargin{iArg+1})
-                            rangeCost = varargin{iArg+1};
+                            if varargin{iArg+1} >= 0
+                                rangeCost = varargin{iArg+1};
+                            else
+                                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                    'Invalid Value.\nrangeCost is a nonnegative value')
+                            end
+                        else
+                            error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                'Invalid Value.\nrangeCost is a nonnegative value')
                         end
                     case {'capacityCost', 'capacitycost', 'Capacity',   ...
                             'capacity'}
                         if isnumeric(varargin{iArg+1})
-                            capacityCost = varargin{iArg+1};
+                            if varargin{iArg+1} >= 0
+                                capacityCost = varargin{iArg+1};
+                            else
+                                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                    'Invalid Value.\ncapacityCost is a nonnegative value')
+                            end
+                        else
+                            error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                'Invalid Value.\ncapacityCost is a nonnegative value')
+                        end
+                    case {'flagReport', 'Report', 'report'}
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0
+                                flagReport = varargin{iArg+1};
+                            else
+                                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                    'Invalid Value.\nflagReport is a boolean value.\n')
+                            end
+                        else
+                            error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                'Invalid Value.\nflagReport is a boolean value.\n')
+                        end
+                    case {'flagReportGraph', 'ReportGraph', 'Graph',    ...
+                            'graph'}
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0
+                                flagReportGraph = varargin{iArg+1};
+                            else
+                                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                    'Invalid Value.\nflagReportGraph is a boolean value.\n')
+                            end
+                        else
+                            error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                'Invalid Value.\nflagReportGraph is a boolean value.\n')
                         end
                     otherwise
                         args{end+1} = varargin{iArg};
@@ -93,6 +150,8 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 obj.Field.DemandField.field;
             obj.rangeCost = rangeCost;
             obj.capacityCost = capacityCost;
+            obj.flagReport = flagReport;
+            obj.flagReportGraph = flagReportGraph;
             obj.computefitness();
         end
     end
@@ -132,6 +191,20 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                     obj.Field.baseStationCapacity)));
             end
             obj.computeroulette();
+        end
+        function halt = shouldhalt(obj)
+            
+        end
+        function showgenerationreport(obj)
+            if obj.flagReport
+                % Report
+                [member, fitness] = obj.findfittestmembers(1);
+                fprintf('\nProcessed Generation:\t%d\t(%d | %d)\nMaximum Fitness:\t%1.5e\n',  ...
+                    obj.nGenerations, obj.minGeneration, obj.maxGeneration, fitness);
+                if obj.flagReportGraph
+                    % Display fittest member
+                end
+            end
         end
     end
     

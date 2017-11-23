@@ -37,6 +37,12 @@ classdef (Abstract) GeneticAlgorithm < handle
     %           of the selected/crossovered chromosomes has a chance of
     %           mutating (i.e., the bit value inverts).  The rate
     %           probability of which this occurs is rateMutation.
+    %       minGeneration is the minimum number of generations the genetic
+    %           algorithm will automatically process.  A nonnegative
+    %           integer.
+    %       maxGeneration is the maximum number of generations the genetic
+    %           algorithm will automatically process.  A nonnegative
+    %           integer greater than or equal to minGeneration.
     %       nGenerations is a counter of the number of (new) generations 
     %           that the genetic algorithm has processed since creation
     %       newMembers is an internal buffer storing the newly generated
@@ -69,19 +75,25 @@ classdef (Abstract) GeneticAlgorithm < handle
         flagUniqueness  =   0
         rateCrossover   =   0.5
         rateMutation    =   0.5
+        minGeneration   =   0
+        maxGeneration   =   1000
     end
+    
     properties (SetAccess=private, GetAccess=public)
         nGenerations    =   0
     end
+    
     properties (Access=public)
         % private
         newMembers
     end
+    
     properties (Access=public)
         % protected
         members
         fitnessRoulette
     end
+    
     properties (Access=public, Abstract)
         % protected
         memberFitness
@@ -103,6 +115,10 @@ classdef (Abstract) GeneticAlgorithm < handle
                 %                       -   double over [0, 1]
                 % 'rateMutation', 'Mutation', 'mutation'
                 %                       -   double over [0, 1]
+                % 'minGeneration', 'min'
+                %                       -   integer nonnegative
+                % 'maxGeneration', 'max'
+                %                       -   integer >= minGeneration
             % Parse Inputs
             if isnumeric(nMembers)
                 obj.nMembers = nMembers;
@@ -169,10 +185,32 @@ classdef (Abstract) GeneticAlgorithm < handle
                             error('geneticalgorithm:constructor:invVal',    ...
                                 'Invalid Value.\nrateMutation is a double over [0, 1].\n')
                         end
+                    case {'minGeneration', 'min'}
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0
+                                obj.minGeneration = int8(varargin{iArg+1});
+                            else
+                                error('geneticalgorithm:constructor:invVal',    ...
+                                    'Invalid Value.\nminGeneration is a nonnegative integer.\n')
+                            end
+                        end
+                    case {'maxGeneration', 'max'}
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0
+                                obj.maxGeneration = int8(varargin{iArg+1});
+                            else
+                                error('geneticalgorithm:constructor:invVal',    ...
+                                    'Invalid Value.\nmaxGeneration is a nonnegative integer.\n')
+                            end
+                        end
                     otherwise
                         error('geneticalgorithm:constructor:invFlag',   ...
                             'Invalid Flag.\nSee documentation for valid flags.\n')
                 end
+            end
+            if obj.minGeneration > obj.maxGeneration
+                error('geneticalgorithm:constructor:invVal',    ...
+                    'Invalid Value.\nminGeneration must be smaller than maxGeneration.\n')
             end
             obj.initializemembers();
             obj.newMembers = obj.members;
@@ -206,6 +244,8 @@ classdef (Abstract) GeneticAlgorithm < handle
             obj.members = obj.newMembers;
             % Calculate fitness of new members
             obj.computefitness()
+            % Handle Reporting
+            obj.showgenerationreport()
         end
         function varargout = findfittestmembers(obj, num)
             % Find the fittest members in obj.members
@@ -226,7 +266,23 @@ classdef (Abstract) GeneticAlgorithm < handle
                 varargout{2} = fitIndex(1:num);
             end
         end
+        function computesolution(obj)
+            % Compute the solution of the genetic algorithm by processing a
+                % sequence of generations until a/the halting condition is
+                % reached
+            while 1
+                % Compute Generation
+                obj.onegeneration();
+                % Check if should halt
+                if obj.shouldhalt()
+                    % halt
+                    fprintf('Halting Condition Reached.\n');
+                    break;
+                end
+            end
+        end
     end
+    
     methods (Access=private)
         function initializemembers(obj)
             if obj.flagUniqueness
@@ -303,6 +359,7 @@ classdef (Abstract) GeneticAlgorithm < handle
             uniqueSelection = selection(selectionIndices == 1, :);
         end
     end
+    
     methods (Access=protected)
         function computeroulette(obj)
             obj.fitnessRoulette(1) = obj.memberFitness(1);
@@ -312,9 +369,16 @@ classdef (Abstract) GeneticAlgorithm < handle
             end
         end
     end
+    
     methods (Access=protected, Abstract)
         computefitness(obj)
         % Compute/Calculate fitness heuristic for the present members
-        % Run after each operation that changes the group of members
+            % Run after each operation that changes the group of members
+        halt = shouldhalt(obj)
+        % Returns a boolean (halt) which tells the genetic algorithm to
+            % halt; halt = 1 iff GA should halt, halt = 0 otherwise
+        showgenerationreport(obj)
+        % Handles any reporting that happens at the end of each generation
+            % processing
     end
 end
