@@ -33,24 +33,16 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
     %           (resource) being over-allocated.  Nonnegative
     
     properties (SetAccess=private, GetAccess=public)
-        Field
+        Field                   % Field struct from VorMod.m
         demandField
         rangeCost
         capacityCost
-        fitnessCountHalt
-        memberCountHalt
         flagReport
         flagReportGraph
     end
     properties (Access=public)
         % protected
         memberFitness
-        fittestMember
-        fittestMemberFitness
-        previousFittestMember           =   0
-        previousFittestMemberFitness    =   0
-        fitnessCount                    =   0
-        memberCount                     =   0
     end
     properties (Access=public)
         beta
@@ -199,20 +191,19 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                     obj.Field.baseStationCapacity)));
             end
             obj.computeroulette();
-            [obj.fittestMember, obj.fittestMemberFitness] = ...
-                obj.findfittestmembers(1);
         end
         function halt = shouldhalt(obj)
             halt = 0;
-            if obj.previousMember
+            
         end
         function showgenerationreport(obj)
             if obj.flagReport
                 % Report
-                cost = sum(obj.fittestMember);
-                overage = 1/obj.fittestMemberFitness - cost;
+                [member, fitness] = obj.findfittestmembers(1);
+                cost = sum(member);
+                overage = 1/fitness - cost;
                 fprintf('\nProcessed Generation:\t%d\t(%d | %d)\nMaximum Fitness:\t%1.5e\nBS:\t%1.5e\nOverage:\t%1.5e\n',  ...
-                    obj.nGenerations, obj.minGeneration, obj.maxGeneration, obj.fittestMemberFitness, cost, overage);
+                    obj.nGenerations, obj.minGeneration, obj.maxGeneration, fitness, cost, overage);
                 if obj.flagReportGraph
                     % Display fittest member
                 end
