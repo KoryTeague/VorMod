@@ -137,7 +137,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                     case {'nElitism', 'Elitism', 'Elite', 'elitism', 'elite'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                obj.nElitism = int8(varargin{iArg+1});
+                                obj.nElitism = int32(varargin{iArg+1});
                             else
                                 error('geneticalgorithm:constructor:invVal',    ...
                                     'Invalid Value.\nElitism is a nonnegative integer.\n')
@@ -188,7 +188,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                     case {'minGeneration', 'min'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                obj.minGeneration = int8(varargin{iArg+1});
+                                obj.minGeneration = int32(varargin{iArg+1});
                             else
                                 error('geneticalgorithm:constructor:invVal',    ...
                                     'Invalid Value.\nminGeneration is a nonnegative integer.\n')
@@ -197,7 +197,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                     case {'maxGeneration', 'max'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                obj.maxGeneration = int8(varargin{iArg+1});
+                                obj.maxGeneration = int32(varargin{iArg+1});
                             else
                                 error('geneticalgorithm:constructor:invVal',    ...
                                     'Invalid Value.\nmaxGeneration is a nonnegative integer.\n')
@@ -269,14 +269,19 @@ classdef (Abstract) GeneticAlgorithm < handle
         function computesolution(obj)
             % Compute the solution of the genetic algorithm by processing a
                 % sequence of generations until a/the halting condition is
-                % reached
+                % reached.  Handles maximum and minimum number of
+                % generations.
             while 1
                 % Compute Generation
                 obj.onegeneration();
-                % Check if should halt
-                if obj.shouldhalt()
-                    % halt
-                    fprintf('Halting Condition Reached.\n');
+                % Halting
+                if obj.nGenerations >= obj.maxGeneration
+                    fprintf('Maximum Number of Generations Reached\nHalting\n')
+                    break;
+                elseif (obj.nGenerations >= obj.minGeneration) &&   ...
+                        obj.shouldhalt()
+                    % Specific Conditions Halt
+                    fprintf('Other, Specific Conditions Occured\nHalting\n')
                     break;
                 end
             end
@@ -376,7 +381,9 @@ classdef (Abstract) GeneticAlgorithm < handle
             % Run after each operation that changes the group of members
         halt = shouldhalt(obj)
         % Returns a boolean (halt) which tells the genetic algorithm to
-            % halt; halt = 1 iff GA should halt, halt = 0 otherwise
+            % halt; halt = 1 iff GA should halt, halt = 0 otherwise;
+            % handles any special halting conditions beyond minimum and
+            % maximum generation count.
         showgenerationreport(obj)
         % Handles any reporting that happens at the end of each generation
             % processing
