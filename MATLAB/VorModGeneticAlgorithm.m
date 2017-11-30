@@ -31,22 +31,44 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
     %           out of range of available base stations.  Nonnegative
     %       capacityCost is the additional fitness cost for a base station
     %           (resource) being over-allocated.  Nonnegative
+    %       fitnessCountHalt is the number of generations the genetic
+    %           algorithm can progress without the fitness value of the
+    %           fittest member changing.  That is, once fitnessCount >=
+    %           fitnessCountHalt, the GA halts.  Positive integer
+    %       memberCountHalt is the number of generations the genetic
+    %           algorithm can progress without the fittest member changing.
+    %           That is, once memberCount >= memberCountHalt, the GA halts.
+    %           Positive integer
+    %       flagGenerationReport is a control flag.
+    %           if 0, obj.showgenerationreport() reports nothing
+    %           if 1, obj.showgenerationreport() reports after every
+    %               generation
+    %           if 2 or 3, obj.showgenerationreport() reports only when the
+    %               fittest member changes
+    %       flagGenerationReportGraph is a boolean control flag
+    %           if false, obj.showgenerationreport() doesn't graph the
+    %               fittest member
+    %           if true, obj.showgenerationreport() graphs the fittest
+    %               member
     
-    properties (SetAccess=private, GetAccess=public)
+    properties (Access=public)
+        % SetAccess=private, GetAccess=public
         Field
         demandField
         rangeCost
         capacityCost
         fitnessCountHalt
         memberCountHalt
-        flagReport
-        flagReportGraph
+        flagGenerationReport
+        flagGenerationReportGraph
     end
     properties (Access=public)
         % protected
         memberFitness
         fittestMember
         fittestMemberFitness
+        fittestCost
+        fittestOverage
         previousFittestMember           =   0
         previousFittestMemberFitness    =   0
         fitnessCount                    =   0
@@ -71,15 +93,25 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 %                       -   nonnegative
                 % 'capacityCost', 'capacitycost', 'Capacity', 'capacity'
                 %                       -   nonnegative
-                % 'flagReport', 'Report', 'report'
+                % 'flagGenerationReport', 'GenerationReport', 'genrep',
+                %   'generationreport'
+                %                       -   {0, 1, 2}
+                % 'flagGenerationReportGraph', 'GenerationReportGraph',
+                %   'Graph', 'graph', 'genrepgraph'
                 %                       -   boolean
-                % 'flagReportGraph', 'ReportGraph', 'Graph', 'graph'
-                %                       -   boolean
+                % 'fitnessCountHalt', 'fitnesscounthalt', 'fitcounthalt'
+                %   'fitcount'
+                %                       -   positive
+                % 'memberCountHalt', 'membercounthalt', 'memcounthalt',
+                %   'memcount'
+                %                       -   positive
             beta = 1;
             rangeCost = 1;
             capacityCost = 1;
-            flagReport = 1;
-            flagReportGraph = 1;
+            fitnessCountHalt = 100;
+            memberCountHalt = 250;
+            flagGenerationReport = 1;
+            flagGenerationReportGraph = true;
             args = {};
             for iArg = 1:2:nargin-3
                 switch varargin{iArg}
@@ -120,10 +152,11 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                             error('vormodgeneticalgorithm:constructor:invVal',  ...
                                 'Invalid Value.\ncapacityCost is a nonnegative value')
                         end
-                    case {'flagReport', 'Report', 'report'}
+                    case {'flagGenerationReport', 'GenerationReport',   ...
+                            'genrep', 'generationreport'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                flagReport = varargin{iArg+1};
+                                flagGenerationReport = varargin{iArg+1};
                             else
                                 error('vormodgeneticalgorithm:constructor:invVal',  ...
                                     'Invalid Value.\nflagReport is a boolean value.\n')
@@ -132,18 +165,40 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                             error('vormodgeneticalgorithm:constructor:invVal',  ...
                                 'Invalid Value.\nflagReport is a boolean value.\n')
                         end
-                    case {'flagReportGraph', 'ReportGraph', 'Graph',    ...
-                            'graph'}
+                    case {'flagGenerationReportGraph',  ...
+                            'GenerationReportGraph', 'Graph', 'graph',  ...
+                            'genrepgraph'}
+                        if islogical(varargin{iArg+1})
+                            flagGenerationReportGraph = varargin{iArg+1};
+                        else
+                            error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                'Invalid Value.\nflagReportGraph is a boolean.\n')
+                        end
+                    case {'fitnessCountHalt', 'fitnesscounthalt',   ...
+                            'fitcounthalt', 'fitcount'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                flagReportGraph = varargin{iArg+1};
+                                fitnessCountHalt = varargin{iArg+1};
                             else
                                 error('vormodgeneticalgorithm:constructor:invVal',  ...
-                                    'Invalid Value.\nflagReportGraph is a boolean value.\n')
+                                    'Invalid Value.\nfitnessCountHalt is a positive value.\n')
                             end
                         else
                             error('vormodgeneticalgorithm:constructor:invVal',  ...
-                                'Invalid Value.\nflagReportGraph is a boolean value.\n')
+                                'Invalid Value.\nfitnessCountHalt is a positive value.\n')
+                        end
+                    case {'memberCountHalt', 'membercounthalt', ...
+                            'memcounthalt', 'memcount'}
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0
+                                memberCountHalt = varargin{iArg+1};
+                            else
+                                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                    'Invalid Value.\nmemberCountHalt is a positive value.\n')
+                            end
+                        else
+                            error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                'Invalid Value.\nmemberCountHalt is a positive value.\n')
                         end
                     otherwise
                         args{end+1} = varargin{iArg};
@@ -158,8 +213,14 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 obj.Field.DemandField.field;
             obj.rangeCost = rangeCost;
             obj.capacityCost = capacityCost;
-            obj.flagReport = flagReport;
-            obj.flagReportGraph = flagReportGraph;
+            obj.fitnessCountHalt = fitnessCountHalt;
+            obj.memberCountHalt = memberCountHalt;
+            if flagGenerationReport == 3
+                obj.flagGenerationReport = 2;
+            else
+                obj.flagGenerationReport = flagGenerationReport;
+            end
+            obj.flagGenerationReportGraph = flagGenerationReportGraph;
             obj.computefitness();
         end
     end
@@ -199,23 +260,63 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                     obj.Field.baseStationCapacity)));
             end
             obj.computeroulette();
-            [obj.fittestMember, obj.fittestMemberFitness] = ...
-                obj.findfittestmembers(1);
+            [obj.fittestMember, index] = obj.findfittestmembers(1);
+            obj.fittestMemberFitness = obj.memberFitness(index, :);
+            obj.fittestCost = sum(obj.fittestMember);
+            obj.fittestOverage = 1/obj.fittestMemberFitness -   ...
+                obj.fittestCost;
         end
         function halt = shouldhalt(obj)
-            halt = 0;
-            if obj.previousMember
+            % Fitness Halt Count
+            if obj.fittestMemberFitness == obj.previousFittestMemberFitness
+                obj.fitnessCount = obj.fitnessCount + 1;
+            else
+                obj.fitnessCount = 0;
+                obj.previousFittestMemberFitness =  ...
+                    obj.fittestMemberFitness;
+            end
+            
+            % Member Halt Count
+            %{
+            if all(obj.fittestMember == obj.previousFittestMember) &&   ...
+                    obj.fittestOverage > max(obj.Field.baseStationCost)
+                obj.memberCount = obj.memberCount + 1;
+            %}
+            if all(obj.fittestMember == obj.previousFittestMember)
+                obj.memberCount = obj.memberCount + 1;
+            else
+                obj.memberCount = 0;
+                obj.previousFittestMember = obj.fittestMember;
+                if obj.flagGenerationReport == 3
+                    obj.flagGenerationReport = 2;
+                    obj.showgenerationreport();
+                end
+            end
+            
+            halt = obj.fitnessCount > obj.fitnessCountHalt ||   ...
+                obj.memberCount > obj.memberCountHalt;
+            
+            if halt && (obj.nGenerations >= obj.minGeneration)
+                obj.flagGenerationReport = 2;
+                obj.showgenerationreport();
+            end
         end
         function showgenerationreport(obj)
-            if obj.flagReport
+            if any(obj.flagGenerationReport == [1, 2])
                 % Report
-                cost = sum(obj.fittestMember);
-                overage = 1/obj.fittestMemberFitness - cost;
-                fprintf('\nProcessed Generation:\t%d\t(%d | %d)\nMaximum Fitness:\t%1.5e\nBS:\t%1.5e\nOverage:\t%1.5e\n',  ...
-                    obj.nGenerations, obj.minGeneration, obj.maxGeneration, obj.fittestMemberFitness, cost, overage);
-                if obj.flagReportGraph
+                fprintf(['\nProcessed Generation:\t%d\t(%d | %d)\n' ...
+                    'Maximum Fitness:\t%1.5e\n' ...
+                    'BS:\t%1.5e\n'  ...
+                    'Overage:\t%1.5e\n'],	...
+                    obj.nGenerations, obj.minGeneration,    ...
+                    obj.maxGeneration, obj.fittestMemberFitness,    ...
+                    obj.fittestCost, obj.fittestOverage);
+                if obj.flagGenerationReportGraph
                     % Display fittest member
                 end
+            end
+            if obj.flagGenerationReport == 2
+                obj.flagGenerationReport = 3;
             end
         end
     end

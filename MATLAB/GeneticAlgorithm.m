@@ -137,7 +137,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                     case {'nElitism', 'Elitism', 'Elite', 'elitism', 'elite'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                obj.nElitism = int8(varargin{iArg+1});
+                                obj.nElitism = int32(varargin{iArg+1});
                             else
                                 error('geneticalgorithm:constructor:invVal',    ...
                                     'Invalid Value.\nElitism is a nonnegative integer.\n')
@@ -188,7 +188,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                     case {'minGeneration', 'min'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                obj.minGeneration = int8(varargin{iArg+1});
+                                obj.minGeneration = int32(varargin{iArg+1});
                             else
                                 error('geneticalgorithm:constructor:invVal',    ...
                                     'Invalid Value.\nminGeneration is a nonnegative integer.\n')
@@ -197,7 +197,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                     case {'maxGeneration', 'max'}
                         if isnumeric(varargin{iArg+1})
                             if varargin{iArg+1} >= 0
-                                obj.maxGeneration = int8(varargin{iArg+1});
+                                obj.maxGeneration = int32(varargin{iArg+1});
                             else
                                 error('geneticalgorithm:constructor:invVal',    ...
                                     'Invalid Value.\nmaxGeneration is a nonnegative integer.\n')
@@ -275,11 +275,11 @@ classdef (Abstract) GeneticAlgorithm < handle
                 % Compute Generation
                 obj.onegeneration();
                 % Halting
-                if obj.nGenerations >= obj.maxGenerations
+                if obj.nGenerations >= obj.maxGeneration
                     fprintf('Maximum Number of Generations Reached\nHalting\n')
                     break;
-                elseif obj.nGenerations >= obj.minGenerations &&    ...
-                        obj.shouldhalt
+                elseif (obj.nGenerations >= obj.minGeneration) &&   ...
+                        obj.shouldhalt()
                     % Specific Conditions Halt
                     fprintf('Other, Specific Conditions Occured\nHalting\n')
                     break;
