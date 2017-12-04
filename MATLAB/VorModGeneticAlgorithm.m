@@ -208,9 +208,11 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             obj@GeneticAlgorithm(nMembers, memberLength, args{:});
             obj.Field = Field;
             obj.beta = beta;
+            %{
             obj.demandField = obj.beta *    ...
                 obj.Field.DemandField.demandMod *   ...
                 obj.Field.DemandField.field;
+            %}
             obj.rangeCost = rangeCost;
             obj.capacityCost = capacityCost;
             obj.fitnessCountHalt = fitnessCountHalt;
@@ -222,6 +224,20 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             end
             obj.flagGenerationReportGraph = flagGenerationReportGraph;
             obj.computefitness();
+        end
+        function set.beta(obj, betaIn)
+            if isnumeric(betaIn)
+                if betaIn >= 0
+                    obj.beta = betaIn;
+                else
+                    error('vormodgeneticalgorithm:constructor:invVal',  ...
+                        'Invalid Value.\nbeta is a nonnegative value.\n')
+                end
+            else
+                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                    'Invalid Valuie.\nbeta is a nonnegative value.\n')
+            end
+            obj.setdemandfield()
         end
     end
     
@@ -318,6 +334,20 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             if obj.flagGenerationReport == 2
                 obj.flagGenerationReport = 3;
             end
+        end
+        function childreset(obj)
+            obj.previousFittestMember = 0;
+            obj.previousFittestMemberFitness = 0;
+            obj.fitnessCount = 0;
+            obj.memberCount = 0;
+        end
+    end
+    
+    methods (Access=private)
+        function setdemandfield(obj)
+            obj.demandField = obj.beta *    ...
+                obj.Field.DemandField.demandMod *   ...
+                obj.Field.DemandField.field;
         end
     end
     

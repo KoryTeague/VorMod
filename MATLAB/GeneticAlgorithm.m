@@ -286,6 +286,12 @@ classdef (Abstract) GeneticAlgorithm < handle
                 end
             end
         end
+        function reset(obj)
+            obj.initializemembers()
+            obj.computefitness()
+            obj.nGenerations = 0;
+            obj.childreset()
+        end
     end
     
     methods (Access=private)
@@ -387,5 +393,8 @@ classdef (Abstract) GeneticAlgorithm < handle
         showgenerationreport(obj)
         % Handles any reporting that happens at the end of each generation
             % processing
+        childreset(obj)
+        % Handles any additional resetting a child object would need.
+            % Called at the end of obj.reset().
     end
 end
