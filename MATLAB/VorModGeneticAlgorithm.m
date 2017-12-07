@@ -59,6 +59,7 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
         capacityCost
         fitnessCountHalt
         memberCountHalt
+        beta
         flagGenerationReport
         flagGenerationReportGraph
     end
@@ -73,9 +74,6 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
         previousFittestMemberFitness    =   0
         fitnessCount                    =   0
         memberCount                     =   0
-    end
-    properties (Access=public)
-        beta
     end
     
     methods
@@ -208,11 +206,9 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             obj@GeneticAlgorithm(nMembers, memberLength, args{:});
             obj.Field = Field;
             obj.beta = beta;
-            %{
             obj.demandField = obj.beta *    ...
                 obj.Field.DemandField.demandMod *   ...
                 obj.Field.DemandField.field;
-            %}
             obj.rangeCost = rangeCost;
             obj.capacityCost = capacityCost;
             obj.fitnessCountHalt = fitnessCountHalt;
@@ -225,7 +221,7 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             obj.flagGenerationReportGraph = flagGenerationReportGraph;
             obj.computefitness();
         end
-        function set.beta(obj, betaIn)
+        function setbeta(obj, betaIn)
             if isnumeric(betaIn)
                 if betaIn >= 0
                     obj.beta = betaIn;
@@ -237,7 +233,10 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 error('vormodgeneticalgorithm:constructor:invVal',  ...
                     'Invalid Valuie.\nbeta is a nonnegative value.\n')
             end
-            obj.setdemandfield()
+            obj.demandField = obj.beta *    ...
+                obj.Field.DemandField.demandMod *   ...
+                obj.Field.DemandField.field;
+            obj.reset()
         end
     end
     
@@ -340,14 +339,9 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             obj.previousFittestMemberFitness = 0;
             obj.fitnessCount = 0;
             obj.memberCount = 0;
-        end
-    end
-    
-    methods (Access=private)
-        function setdemandfield(obj)
-            obj.demandField = obj.beta *    ...
-                obj.Field.DemandField.demandMod *   ...
-                obj.Field.DemandField.field;
+            if obj.flagGenerationReport == 3
+                obj.flagGenerationReport = 2;
+            end
         end
     end
     

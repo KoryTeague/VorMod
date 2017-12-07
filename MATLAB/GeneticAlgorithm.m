@@ -81,6 +81,9 @@ classdef (Abstract) GeneticAlgorithm < handle
     
     properties (SetAccess=private, GetAccess=public)
         nGenerations    =   0
+        bestFitnesses
+        bestMembers
+        runTime         =   0
     end
     
     properties (Access=public)
@@ -97,6 +100,11 @@ classdef (Abstract) GeneticAlgorithm < handle
     properties (Access=public, Abstract)
         % protected
         memberFitness
+            % Vector of member fitnesses
+        fittestMember
+            % The fittest member of the current generation
+        fittestMemberFitness
+        	% The fitness of the fittest member of the current generation
     end
     
     methods
@@ -212,6 +220,8 @@ classdef (Abstract) GeneticAlgorithm < handle
                 error('geneticalgorithm:constructor:invVal',    ...
                     'Invalid Value.\nminGeneration must be smaller than maxGeneration.\n')
             end
+            obj.bestFitnesses = zeros(obj.maxGeneration, 1);
+            obj.bestMembers = zeros(obj.maxGeneration, obj.memberLength);
             obj.initializemembers();
             obj.newMembers = obj.members;
         end
@@ -271,9 +281,15 @@ classdef (Abstract) GeneticAlgorithm < handle
                 % sequence of generations until a/the halting condition is
                 % reached.  Handles maximum and minimum number of
                 % generations.
+            obj.runTime = cputime;
             while 1
                 % Compute Generation
                 obj.onegeneration();
+                % Track
+                obj.bestFitnesses(obj.nGenerations) =   ...
+                    obj.fittestMemberFitness;
+                obj.bestMembers(obj.nGenerations, :) =  ...
+                    obj.fittestMember;
                 % Halting
                 if obj.nGenerations >= obj.maxGeneration
                     fprintf('Maximum Number of Generations Reached\nHalting\n')
@@ -285,11 +301,15 @@ classdef (Abstract) GeneticAlgorithm < handle
                     break;
                 end
             end
+            obj.runTime = cputime - obj.runTime;
         end
         function reset(obj)
             obj.initializemembers()
             obj.computefitness()
             obj.nGenerations = 0;
+            obj.bestFitnesses = zeros(obj.maxGeneration, 1);
+            obj.bestMembers = zeros(obj.maxGeneration, obj.memberLength);
+            obj.runTime = 0;
             obj.childreset()
         end
     end
