@@ -17,7 +17,7 @@ function cplexWriteDataTwoStage(filepath, ID, nResources,   ...
     % Number of Realizations
 
     % Create File
-    fileID = fopen(filepath, 'W');
+    fileID = fopen(filepath, 'w');
     
     % Header
     fprintf(fileID, ...
