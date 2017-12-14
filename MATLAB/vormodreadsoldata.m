@@ -17,5 +17,5 @@ function [VOS, VAS] = vormodreadsoldata( path, betas )
     VAS = CplexVorModOneStageSolution([path '\VorAppxSol'], betas);
 
     %% Save
-    save([path '_ReadSolData.mat'], VOS, VAS);
+    save([path '\_ReadSolData.mat'], 'VOS', 'VAS');
 end
