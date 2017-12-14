@@ -49,10 +49,10 @@ function cplexWriteDataOneStage(filepath, ID1, ID2, nResources, ...
     CppPlexFileWrite(fileID, probability, 1, '%.6e');
     
     % Available Resources
-    CppPlexFileWrite(fileID, activeResources, 1, '%.6e');
+    CppPlexFileWrite(fileID, activeResources, 1, '%i');
     
     % Rate Normalization
-    CppPlexFileWrite(fileID, rateNormalization, 1, '%.6e');
+    CppPlexFileWrite(fileID, rateNormalization, 3, '%.6e');
     
     fclose(fileID);
 end
