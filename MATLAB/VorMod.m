@@ -23,7 +23,7 @@ CTRL_DRAW_BS_VORONOI =              true;       % (true)
 CTRL_DRAW_DEMAND_POINTS =           true;       % (true)
 CTRL_ALLON_TEST_EXIT =              false;      % (false)
 CTRL_GENERATION_REPORT =            2;          % (2)
-CTRL_GENERATION_REPORT_GRAPH =      true;       % (true)
+CTRL_GENERATION_REPORT_GRAPH =      5;          % (5)
 CTRL_WRITE_OPTIMIZATION_DATA =      true;       % (true)
 CTRL_WRITE_GENETIC_ALGORITHM_DATA = true;       % (true)
 
@@ -39,7 +39,7 @@ FIELD_DEPTH =                       50;         % (50)
 FIELD_SCALING_COEFFICIENT =         2;          % (2)
 
 % Field Resources
-FIELD_NUM_BASE_STATIONS =           50;         % (60)
+FIELD_NUM_BASE_STATIONS =           60;         % (60)
 FIELD_BASE_STATION_CAPACITY =       1.5e6 * ...
     ones(FIELD_NUM_BASE_STATIONS, 1);           % (1.5e6)
 FIELD_BASE_STATION_RANGE =          500 *   ...
@@ -48,8 +48,8 @@ FIELD_BASE_STATION_COST =           1 *     ...
     ones(FIELD_NUM_BASE_STATIONS, 1);           % (1)
 
 % Data Set Settings
-CP_NUM_SOL_DEMAND_POINTS =          45;         % (60); For sol/learning set
-CP_NUM_SOL_DEMAND_REALIZATIONS =    15;         % (20); For sol/learning set
+CP_NUM_SOL_DEMAND_POINTS =          60;         % (60); For sol/learning set
+CP_NUM_SOL_DEMAND_REALIZATIONS =    20;         % (20); For sol/learning set
 
 %% CPLEX Settings
 alpha =                             5:5:100;    % (5:5:100)
@@ -68,7 +68,7 @@ GA_MUTATION_RATE =                  1 / FIELD_NUM_BASE_STATIONS;
 % Generation Limits
 GA_NUM_FITNESS_HALT =               150;        % (50)
 GA_NUM_MEMBER_HALT =                400;        % (200)
-GA_NUM_MAXIMUM_GENERATIONS =        1500;       % (1500)
+GA_NUM_MAXIMUM_GENERATIONS =        3000;       % (3000)
 GA_NUM_MINIMUM_GENERATIONS =        300 - GA_NUM_FITNESS_HALT;
                                                 % (200 - #Fitness Halt)
 
@@ -294,7 +294,8 @@ if CTRL_WRITE_OPTIMIZATION_DATA
         ones(CP_NUM_SOL_DEMAND_REALIZATIONS, 1) /   ...
             CP_NUM_SOL_DEMAND_REALIZATIONS, ...
         alpha,  ...
-        SolutionSet.getratenormalization(1:alphaLength));
+        SolutionSet.getratenormalization(1: ...
+            CP_NUM_SOL_DEMAND_REALIZATIONS));
 end
 
 % Genetic Algorithm (Learning Set / VAS)
@@ -321,7 +322,8 @@ if CTRL_WRITE_GENETIC_ALGORITHM_DATA
                 CP_NUM_SOL_DEMAND_REALIZATIONS, ...
             VorModGASolution.bestMembers(   ...
                 VorModGASolution.nGenerations(iBeta), :, iBeta),    ...
-            SolutionSet.rateNorm);
+            SolutionSet.getratenormalization(1: ...
+                CP_NUM_SOL_DEMAND_REALIZATIONS));
     end
     
     clearvars iBeta logForm

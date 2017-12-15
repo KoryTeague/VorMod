@@ -121,7 +121,8 @@ classdef DemandRealizations < handle
                 % Each matrix in rateNorm's depth is the rateNorm of a
                 % specific index
             nDP = obj(indices(1)).nDemandPoints;
-            rateNorm = zeros(nDP, nRes, length(indices));
+            rateNorm = zeros(nDP, obj(indices(1)).nResources,   ...
+                length(indices));
             rateNorm(:, :, 1) = obj(indices(1)).rateNormalization;
             for iRealization = 2:length(indices)
                 if obj(indices(iRealization)).nDemandPoints ~= nDP

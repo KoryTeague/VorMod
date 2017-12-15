@@ -45,11 +45,12 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
     %               generation
     %           if 2 or 3, obj.showgenerationreport() reports only when the
     %               fittest member changes
-    %       flagGenerationReportGraph is a boolean control flag
-    %           if false, obj.showgenerationreport() doesn't graph the
-    %               fittest member
-    %           if true, obj.showgenerationreport() graphs the fittest
+    %       flagGenerationReportGraph is a control flag
+    %           if 0, obj.showgenerationreport() doesn't graph the fittest
     %               member
+    %           if a positive integer, obj.showgenerationreport() graphes
+    %               the fittest member in a figure with id
+    %               flagGenerationReportGraph
     
     properties (Access=public)
         % SetAccess=private, GetAccess=public
@@ -96,7 +97,7 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 %                       -   {0, 1, 2}
                 % 'flagGenerationReportGraph', 'GenerationReportGraph',
                 %   'Graph', 'graph', 'genrepgraph'
-                %                       -   boolean
+                %                       -   nonnegative integer
                 % 'fitnessCountHalt', 'fitnesscounthalt', 'fitcounthalt'
                 %   'fitcount'
                 %                       -   positive
@@ -109,7 +110,7 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
             fitnessCountHalt = 100;
             memberCountHalt = 250;
             flagGenerationReport = 1;
-            flagGenerationReportGraph = true;
+            flagGenerationReportGraph = 0;
             args = {};
             for iArg = 1:2:nargin-3
                 switch varargin{iArg}
@@ -123,7 +124,7 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                             end
                         else
                             error('vormodgeneticalgorithm:constructor:invVal',  ...
-                                'Invalid Valuie.\nbeta is a nonnegative value.\n')
+                                'Invalid Value.\nbeta is a nonnegative value.\n')
                         end
                     case {'rangeCost', 'rangecost', 'range', 'Range'}
                         if isnumeric(varargin{iArg+1})
@@ -166,11 +167,16 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                     case {'flagGenerationReportGraph',  ...
                             'GenerationReportGraph', 'Graph', 'graph',  ...
                             'genrepgraph'}
-                        if islogical(varargin{iArg+1})
-                            flagGenerationReportGraph = varargin{iArg+1};
+                        if isnumeric(varargin{iArg+1})
+                            if varargin{iArg+1} >= 0
+                                flagGenerationReportGraph = varargin{iArg+1};
+                            else
+                                error('vormodgeneticalgorithm:constructor:invVal',  ...
+                                    'Invalid Value.\nflagReportGraph is a positive integer.\n')
+                            end
                         else
                             error('vormodgeneticalgorithm:constructor:invVal',  ...
-                                'Invalid Value.\nflagReportGraph is a boolean.\n')
+                                'Invalid Value.\nflagReportGraph is a positive integer.\n')
                         end
                     case {'fitnessCountHalt', 'fitnesscounthalt',   ...
                             'fitcounthalt', 'fitcount'}
@@ -231,12 +237,62 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 end
             else
                 error('vormodgeneticalgorithm:constructor:invVal',  ...
-                    'Invalid Valuie.\nbeta is a nonnegative value.\n')
+                    'Invalid Value.\nbeta is a nonnegative value.\n')
             end
             obj.demandField = obj.beta *    ...
                 obj.Field.DemandField.demandMod *   ...
                 obj.Field.DemandField.field;
             obj.reset()
+        end
+        function plotmembergradient(obj, fig, member, plotTitle)
+            % Determine member loading
+            baseStationIndices = find(member);
+            [~, distanceMinIndex] = ...
+                min(obj.Field.pixelDistances(:, :, logical(member)),[],3);
+            baseStationLoad = zeros(obj.memberLength, 1);
+            for iResource = 1:length(baseStationIndices)
+                baseStationLoad(baseStationIndices(iResource)) =    ...
+                    sum(obj.demandField(distanceMinIndex == ...
+                    iResource));
+            end
+            
+            % Plot
+            figure(fig)
+            hold off
+            surf(obj.Field.DemandField.field -  ...
+                max(max(obj.Field.DemandField.field)), 'linestyle', 'none')
+            hold on
+            if sum(baseStationLoad > 0) > 2
+                voronoi(obj.Field.bsLocations(baseStationLoad > 0, 1),  ...
+                    obj.Field.bsLocations(baseStationLoad > 0, 2), 'w')
+            end
+            scatter(    ...
+                obj.Field.bsLocations(baseStationLoad > 0 & baseStationLoad <= obj.Field.baseStationCapacity / 5, 1),   ...
+                obj.Field.bsLocations(baseStationLoad > 0 & baseStationLoad <= obj.Field.baseStationCapacity / 5, 2),   ...
+                'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k')
+            scatter(    ...
+                obj.Field.bsLocations(baseStationLoad > obj.Field.baseStationCapacity / 5 & baseStationLoad <= 2 * obj.Field.baseStationCapacity / 5, 1),   ...
+                obj.Field.bsLocations(baseStationLoad > obj.Field.baseStationCapacity / 5 & baseStationLoad <= 2 * obj.Field.baseStationCapacity / 5, 2),   ...
+                's', 'MarkerFaceColor', 'c', 'MarkerEdgeColor', 'k')
+            scatter(    ...
+                obj.Field.bsLocations(baseStationLoad > 2 * obj.Field.baseStationCapacity / 5 & baseStationLoad <= 3 * obj.Field.baseStationCapacity / 5, 1),   ...
+                obj.Field.bsLocations(baseStationLoad > 2 * obj.Field.baseStationCapacity / 5 & baseStationLoad <= 3 * obj.Field.baseStationCapacity / 5, 2),   ...
+                'v', 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k')
+            scatter(    ...
+                obj.Field.bsLocations(baseStationLoad > 3 * obj.Field.baseStationCapacity / 5 & baseStationLoad <= 4 * obj.Field.baseStationCapacity / 5, 1),   ...
+                obj.Field.bsLocations(baseStationLoad > 3 * obj.Field.baseStationCapacity / 5 & baseStationLoad <= 4 * obj.Field.baseStationCapacity / 5, 2),   ...
+                'd', 'MarkerFaceColor', 'y', 'MarkerEdgeColor', 'k')
+            scatter(    ...
+                obj.Field.bsLocations(baseStationLoad > 4 * obj.Field.baseStationCapacity / 5 & baseStationLoad <= 1.0001 * obj.Field.baseStationCapacity, 1),  ...
+                obj.Field.bsLocations(baseStationLoad > 4 * obj.Field.baseStationCapacity / 5 & baseStationLoad <= 1.0001 * obj.Field.baseStationCapacity, 2),  ...
+                '^', 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k')
+            scatter(    ...
+                obj.Field.bsLocations(baseStationLoad > 1.0001 * obj.Field.baseStationCapacity, 1), ...
+                obj.Field.bsLocations(baseStationLoad > 1.0001 * obj.Field.baseStationCapacity, 2), ...
+                'h', 'MarkerFaceColor', 'm', 'MarkerEdgeColor', 'k')
+            view(0, 90)
+            hold off
+            title(plotTitle)
         end
     end
     
@@ -249,7 +305,7 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                 baseStationIndices = find(obj.members(iMem, :));
                 % Find closest BS and distance to BS for each pixel
                 [distanceMin, distanceMinIndex] =   ...
-                    min(obj.Field.pixelDistances(:, :, ...
+                    min(obj.Field.pixelDistances(:, :,  ...
                     logical(obj.members(iMem, :))), [], 3);
                 % Determine load on each base station and
                 % the max range of the closest base station
@@ -328,6 +384,11 @@ classdef VorModGeneticAlgorithm < GeneticAlgorithm
                     obj.fittestCost, obj.fittestOverage);
                 if obj.flagGenerationReportGraph
                     % Display fittest member
+                    obj.plotmembergradient( ...
+                        obj.flagGenerationReportGraph,  ...
+                        obj.fittestMember,  ...
+                        ['Fittest Member; Generation: ' num2str(obj.nGenerations)])
+                    drawnow
                 end
             end
             if obj.flagGenerationReport == 2
