@@ -4,6 +4,10 @@
 % "kosher".  Instead of a long list of direct, global scripts, this is
 % written to encapsulate better, utilize MATLAB's OOP capabilities, and
 % match to a consistent programming style.
+% Generates global constants, combines data associated with specific
+% portions of the model into encapsulating structs or objects, and runs
+% through generating the models, running the GA, and writing the data to
+% file for VOS and VAS (2-stage and GA + 1-stage solutions) cplex models
 
 %% Initialization
 timestamp = datestr(now, 30);
