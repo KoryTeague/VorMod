@@ -62,8 +62,8 @@ classdef CplexVorModTwoStageSolution < handle
             pathStart = extractBefore(obj.path, '.');
             obj.deltaSlice = cell(obj.alphaLength, 1);
             obj.resourcesActive = cell(obj.alphaLength, 1);
-            obj.objectiveValues = cell(obj.alphaLength, 1);
-            obj.objectiveTimes = cell(obj.alphaLength, 1);
+            obj.objectiveValues = zeros(obj.alphaLength, 1);
+            obj.objectiveTimes = zeros(obj.alphaLength, 1);
             for iFile = 1:obj.alphaLength
                 % del; deltaSlice
                 obj.deltaSlice{iFile} = obj.parsestring(fileread(   ...
@@ -72,10 +72,10 @@ classdef CplexVorModTwoStageSolution < handle
                 obj.resourcesActive{iFile} = obj.parsestring(fileread(  ...
                     [pathStart '_outx_' num2str(iFile) '.dat']));
                 % opt; objectiveValues
-                obj.objectiveValues{iFile} = obj.parsestring(fileread(  ...
+                obj.objectiveValues(iFile) = obj.parsestring(fileread(  ...
                     [pathStart '_outopt_' num2str(iFile) '.dat']));
                 % tim; objectiveTimes
-                obj.objectiveTimes{iFile} = obj.parsestring(fileread(   ...
+                obj.objectiveTimes(iFile) = obj.parsestring(fileread(   ...
                     [pathStart '_outtim_' num2str(iFile) '.dat']));
             end
         end

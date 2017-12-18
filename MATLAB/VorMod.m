@@ -48,8 +48,8 @@ FIELD_BASE_STATION_COST =           1 *     ...
     ones(FIELD_NUM_BASE_STATIONS, 1);           % (1)
 
 % Data Set Settings
-CP_NUM_SOL_DEMAND_POINTS =          60;         % (60); For sol/learning set
-CP_NUM_SOL_DEMAND_REALIZATIONS =    20;         % (20); For sol/learning set
+CP_NUM_SOL_DEMAND_POINTS =          75;         % (60); For sol/learning set
+CP_NUM_SOL_DEMAND_REALIZATIONS =    25;         % (20); For sol/learning set
 
 %% CPLEX Settings
 alpha =                             5:5:100;    % (5:5:100)
