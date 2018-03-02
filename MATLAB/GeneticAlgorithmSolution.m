@@ -33,10 +33,14 @@ classdef GeneticAlgorithmSolution < handle
                 ID = varargin{1};
             end
             fit = obj.bestFitnesses(:, ID);
+            maxGeneration = 0;
             for iID = 1:length(ID)
-                %fit(obj.nGenerations(ID(iID))+1:end, iID) = NaN;
-                fit(obj.nGenerations(ID(iID))+1:end, iID) = ...
-                    fit(obj.nGenerations(ID(iID)), iID);
+                fit(obj.nGenerations(ID(iID))+1:end, iID) = NaN;
+                %fit(obj.nGenerations(ID(iID))+1:end, iID) = ...
+                    %fit(obj.nGenerations(ID(iID)), iID);
+                if maxGeneration < obj.nGenerations(ID(iID))
+                    maxGeneration = obj.nGenerations(ID(iID));
+                end
             end
             figure(fid);
             plot(1:size(fit, 1), fit(:, ID));
@@ -57,7 +61,7 @@ classdef GeneticAlgorithmSolution < handle
                 ID = varargin{1};
             end
             figure(fid)
-            plot(obj.solutions(ID), obj.runTimes(ID))
+            plot(1:length(ID), obj.runTimes(ID))
             xlabel('GA')
             ylabel('CPU Time (seconds)')
             title('GA Runtime')
@@ -75,10 +79,10 @@ classdef GeneticAlgorithmSolution < handle
                 ID = varargin{1};
             end
             figure(fid)
-            plot(obj.solutions(ID), obj.nGenerations(ID))
+            plot(1:length(ID), obj.nGenerations(ID))
             xlabel('GA')
-            ylabel('CPU Time (seconds)')
-            title('GA Runtime')
+            ylabel('Generations')
+            title('GA Number of Generations Before Halt')
         end 
     end
     
