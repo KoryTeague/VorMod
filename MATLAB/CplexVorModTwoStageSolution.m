@@ -79,6 +79,47 @@ classdef CplexVorModTwoStageSolution < handle
                     [pathStart '_outtim_' num2str(iFile) '.dat']));
             end
         end
+        function plotruntime(obj, varargin)
+            % Plots the runtime trend of the CPLEX two-stage model
+            % varargin may contain fid, the figure ID/handle to plot to
+            if nargin == 2
+                figure(varargin{1})
+            end
+            plot(obj.alpha, obj.objectiveTimes);
+        end
+        function plotobjective(obj, varargin)
+            % Plots the objective value trend of the CPLEX two-stage model
+            % varargin may contain fid, the figure ID/handle to plot to
+            if nargin == 2
+                figure(varargin{1})
+            end
+            plot(obj.alpha, obj.objectiveValues);
+        end
+        function plotactiveresources(obj, index, Field, varargin)
+            % Plots the active resources of the state solution
+            % index is the index of the solution to plot
+            % Field is the Field struct present within the Voronoi model
+                % of interest: DemandField (LNField), bsLocations
+            % varargin may contain fid, the figure ID/handle to plot to
+            %if nargin == 3
+                %figure(varargin{1})
+            %end
+            %voronoi(Field.bsLocations(obj.resourcesActive{index}, 1),   ...
+                %Field.bsLocations(obj.resourcesActive{index}, 2));
+        end
+        function plotcosts(obj, varargin)
+            % Plots the cost trend of the CPLEX two-stage model
+            % varargin may contain fid, the figure ID/handle to plot to
+            if nargin == 2
+                figure(varargin{1})
+            end
+            costs = zeros(1, obj.alphaLength);
+            for iAlpha = 1:obj.alphaLength
+                costs(iAlpha) = sum(obj.resourcesActive{iAlpha} .*  ...
+                    obj.cost);
+            end
+            plot(obj.alpha, costs);
+        end
     end
     
     methods (Access=private)
