@@ -151,7 +151,8 @@ classdef LNField
         depth       =   25
     end
     properties (SetAccess=private, GetAccess=private)
-        stdf
+        stdF
+        meanF
         lambdaMax
     end
     properties (SetAccess=private, GetAccess=public)
@@ -161,6 +162,7 @@ classdef LNField
         y           =   10
         field
         fieldGauss
+        fieldNormalizedGauss
         demand
         demandMod   =   1
     end
@@ -234,7 +236,7 @@ classdef LNField
                     repmat(obj.phi, [size(points, 1), 1])) .*   ...
                 cos(points(:, 2)*obj.j +    ...
                     repmat(obj.psi, [size(points, 1), 1])), 2) / obj.depth;
-            vals = exp(obj.scale * vals / obj.stdf + obj.location);
+            vals = exp(obj.scale * (vals - obj.meanF) / obj.stdF + obj.location);
         end
         function obj=setproperty(obj, varargin)
             % Changes properties of the lnfield which would require
@@ -472,9 +474,11 @@ classdef LNField
                     repmat(obj.phi, [obj.x*obj.y, 1])) .*   ...
                 cos(points(:, 2)*obj.j +    ...
                     repmat(obj.psi, [obj.x*obj.y, 1])), 2) / obj.depth;
-            obj.stdf = sqrt(var(vals));
-            vals = vals / obj.stdf;
+            obj.stdF = sqrt(var(vals));
+            obj.meanF = mean(vals);
             obj.fieldGauss = reshape(vals, [obj.y, obj.x]);
+            vals = (vals - obj.meanF) / obj.stdF;
+            obj.fieldNormalizedGauss = reshape(vals, [obj.y, obj.x]);
             vals = exp(obj.scale * vals + obj.location);
             obj.field = reshape(vals, [obj.y, obj.x]);
             obj.lambdaMax = max(max(obj.field));
