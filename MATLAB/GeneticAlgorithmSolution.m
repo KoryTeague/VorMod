@@ -2,7 +2,8 @@ classdef GeneticAlgorithmSolution < handle
     %GeneticAlgorithmSolution Wrapper for VorModGeneticAlgorithm Solution
     
     properties (SetAccess=private)
-        solutions       =   [];
+        %SetAccess=private
+        solutions       =   cell(0);
         nSolutions      =   0;
         bestFitnesses   =   [];
         bestMembers     =   [];
@@ -20,6 +21,21 @@ classdef GeneticAlgorithmSolution < handle
             obj.bestMembers = cat(3, obj.bestMembers, GA.bestMembers);
             obj.runTimes = [obj.runTimes; GA.runTime];
             obj.nGenerations = [obj.nGenerations; GA.nGenerations];
+        end
+        function addsolutionGAS(obj, GAS, ind)
+            % GAS is another GeneticAlgorithmSolution object 
+            % ind are the indices of GAS to add to this object
+            obj.nSolutions = obj.nSolutions + length(ind);
+            for iter = 1:length(ind)
+                obj.solutions = [obj.solutions; GAS.solutions{ind(iter)}];
+                %obj.solutions = [obj.solutions; GAS.solutions{ind}];
+            end
+            obj.bestFitnesses = [obj.bestFitnesses, ...
+                GAS.bestFitnesses(:, ind)];
+            obj.bestMembers = cat(3, obj.bestMembers,   ...
+                GAS.bestMembers(:, :, ind));
+            obj.runTimes = [obj.runTimes; GAS.runTimes(ind)];
+            obj.nGenerations = [obj.nGenerations; GAS.nGenerations(ind)];
         end
         function plotfitness(obj, fid, varargin)
             % Plots the fitness trend of the contained GAs or a specific GA

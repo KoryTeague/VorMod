@@ -344,6 +344,13 @@ classdef (Abstract) GeneticAlgorithm < handle
         end
         function selectionMembers = uniformcrossover(obj, selectionIndices)
             if rand(1) < obj.rateCrossover
+                selection = boolean(randi(2, 2, obj.memberLength) - 1);
+                selectionMembers =  ...
+                    (selection .*   ...
+                    obj.members(selectionIndices, :)) + ...
+                    (~(selection) .*    ...
+                    obj.members(selectionIndices(2:-1:1), :));
+                %{
                 selectionMembers = zeros(2, obj.memberLength);
                 for iBit = 1:obj.memberLength
                     if rand(1) > 0.5
@@ -354,6 +361,7 @@ classdef (Abstract) GeneticAlgorithm < handle
                             obj.members(selectionIndices(2:-1:1), iBit);
                     end
                 end
+                %}
             else
                 selectionMembers = obj.members(selectionIndices, :);
             end

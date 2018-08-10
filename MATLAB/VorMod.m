@@ -33,30 +33,37 @@ CTRL_WRITE_GENETIC_ALGORITHM_DATA = true;       % (true)
 
 %% Field Parameters
 % Field Demand
-FIELD_NUM_ROWS =                    100;        % (100)
-FIELD_NUM_COLS =                    100;        % (100)
-FIELD_PIXEL_WIDTH =                 20;         % (20)
-FIELD_OMEGA =                       2*pi/30;    % (2*pi/30)
-FIELD_LOCATION =                    0;          % (0)
-FIELD_SCALE =                       1;          % (1)
+FIELD_NUM_ROWS =                    200;        % (100)
+FIELD_NUM_COLS =                    200;        % (100)
+FIELD_PIXEL_WIDTH =                 15;         % (20)
+FIELD_OMEGA =                       0.012673 * FIELD_PIXEL_WIDTH;
+                                                % (2*pi/30)
+FIELD_LOCATION =                    18.93;          % (0)
+FIELD_SCALE =                       2.3991;          % (1)
 FIELD_DEPTH =                       50;         % (50)
-FIELD_SCALING_COEFFICIENT =         2;          % (2)
+FIELD_SCALING_COEFFICIENT =         1e-6;          % (2)
 
 % Field Resources
-FIELD_NUM_BASE_STATIONS =           60;         % (60)
-FIELD_BASE_STATION_CAPACITY =       1.5e6 * ...
-    ones(FIELD_NUM_BASE_STATIONS, 1);           % (1.5e6)
-FIELD_BASE_STATION_RANGE =          500 *   ...
-    ones(FIELD_NUM_BASE_STATIONS, 1);           % (500)
-FIELD_BASE_STATION_COST =           1 *     ...
-    ones(FIELD_NUM_BASE_STATIONS, 1);           % (1)
+FIELD_NUM_MACROCELLS    =           22;
+FIELD_NUM_PICOCELLS     =           18;
+FIELD_NUM_BASE_STATIONS =           FIELD_NUM_MACROCELLS +  ...
+    FIELD_NUM_PICOCELLS;                        % (60)
+FIELD_BASE_STATION_CAPACITY =   ...
+    [2e9 * ones(FIELD_NUM_MACROCELLS, 1);   ...
+    1e8 * ones(FIELD_NUM_PICOCELLS, 1)];        % (1.5e6)
+FIELD_BASE_STATION_RANGE =  ...
+    [1500 * ones(FIELD_NUM_MACROCELLS, 1);  ...
+    250 * ones(FIELD_NUM_PICOCELLS, 1)];        % (500)
+FIELD_BASE_STATION_COST =   ...
+    [1 * ones(FIELD_NUM_MACROCELLS, 1); ...
+    0.04 * ones(FIELD_NUM_PICOCELLS, 1)];       % (1)
 
 % Data Set Settings
-CP_NUM_SOL_DEMAND_POINTS =          75;         % (60); For sol/learning set
-CP_NUM_SOL_DEMAND_REALIZATIONS =    25;         % (20); For sol/learning set
+CP_NUM_SOL_DEMAND_POINTS =          90;         % (60); For sol/learning set
+CP_NUM_SOL_DEMAND_REALIZATIONS =    30;         % (20); For sol/learning set
 
 %% CPLEX Settings
-alpha =                             5:5:100;    % (5:5:100)
+alpha =                             [6:2:30, 40:10:100];    % (5:5:100)
 alphaLength =                       length(alpha);
 
 %% GA Settings
@@ -70,10 +77,10 @@ GA_MUTATION_RATE =                  1 / FIELD_NUM_BASE_STATIONS;
                                             % (1/FIELD_NUM_BASE_STATIONS)
                                             
 % Generation Limits
-GA_NUM_FITNESS_HALT =               150;        % (50)
-GA_NUM_MEMBER_HALT =                400;        % (200)
-GA_NUM_MAXIMUM_GENERATIONS =        3000;       % (3000)
-GA_NUM_MINIMUM_GENERATIONS =        300 - GA_NUM_FITNESS_HALT;
+GA_NUM_FITNESS_HALT =               300;        % (50)
+GA_NUM_MEMBER_HALT =                600;        % (200)
+GA_NUM_MAXIMUM_GENERATIONS =        4000;       % (3000)
+GA_NUM_MINIMUM_GENERATIONS =        450 - GA_NUM_FITNESS_HALT;
                                                 % (200 - #Fitness Halt)
 
 % Other Settings
@@ -115,10 +122,19 @@ switch CTRL_GENERATE_BS_LOCATIONS
         clearvars dist
     case 1
         % BS locations as PPP
-        Field.bsLocations = HilbertCurve( ...
-            [FIELD_NUM_COLS * rand([FIELD_NUM_BASE_STATIONS, 1]),   ...
-            FIELD_NUM_ROWS * rand([FIELD_NUM_BASE_STATIONS, 1])],   ...
-            [0 FIELD_NUM_COLS], [0 FIELD_NUM_ROWS]);
+        temp_bs = [FIELD_NUM_COLS * rand([FIELD_NUM_MACROCELLS, 1]),    ...
+            FIELD_NUM_ROWS * rand([FIELD_NUM_MACROCELLS, 1]);   ...
+            cell2mat(Field.DemandField.nonstationaryppp(    ...
+                1, FIELD_NUM_PICOCELLS, 1))];
+%        Field.bsLocations = HilbertCurve( ...
+%            [FIELD_NUM_COLS * rand([FIELD_NUM_BASE_STATIONS, 1]),   ...
+%            FIELD_NUM_ROWS * rand([FIELD_NUM_BASE_STATIONS, 1])],   ...
+%            [0 FIELD_NUM_COLS], [0 FIELD_NUM_ROWS]);
+%        Field.bsLocations = HilbertCurve(temp_bs,   ...
+%            [0 FIELD_NUM_COLS], [0 FIELD_NUM_ROWS]);
+        Field.bsLocations = temp_bs;
+        
+        clearvars temp_bs
     case 2
         % BS locations as nsPPP, as per Field
         Field.bsLocations = HilbertCurve(cell2mat(    ...

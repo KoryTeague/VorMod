@@ -120,6 +120,18 @@ classdef CplexVorModTwoStageSolution < handle
             end
             plot(obj.alpha, costs);
         end
+        function appendsolutions(obj, newSol)
+            obj.ID = [obj.ID ',(' num2str(obj.alphaLength) ')' newSol.ID];
+            obj.deltaSlice = [obj.deltaSlice; newSol.deltaSlice];
+            obj.resourcesActive = [obj.resourcesActive; ...
+                newSol.resourcesActive];
+            obj.objectiveValues = [obj.objectiveValues; ...
+                newSol.objectiveValues];
+            obj.objectiveTimes = [obj.objectiveTimes;   ...
+                newSol.objectiveTimes];
+            obj.alpha = [obj.alpha newSol.alpha];
+            obj.alphaLength = obj.alphaLength + newSol.alphaLength;
+        end
     end
     
     methods (Access=private)
