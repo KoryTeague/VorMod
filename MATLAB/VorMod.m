@@ -33,37 +33,37 @@ CTRL_WRITE_GENETIC_ALGORITHM_DATA = true;       % (true)
 
 %% Field Parameters
 % Field Demand
-FIELD_NUM_ROWS =                    200;        % (100)
-FIELD_NUM_COLS =                    200;        % (100)
+FIELD_NUM_ROWS =                    400;        % (100)
+FIELD_NUM_COLS =                    400;        % (100)
 FIELD_PIXEL_WIDTH =                 15;         % (20)
 FIELD_OMEGA =                       0.012673 * FIELD_PIXEL_WIDTH;
                                                 % (2*pi/30)
-FIELD_LOCATION =                    18.93;          % (0)
-FIELD_SCALE =                       2.3991;          % (1)
+FIELD_LOCATION =                    17.7956;    % (0)
+FIELD_SCALE =                       2.1188;     % (1)
 FIELD_DEPTH =                       50;         % (50)
-FIELD_SCALING_COEFFICIENT =         1e-6;          % (2)
+FIELD_SCALING_COEFFICIENT =         1e-6;       % (2)
 
 % Field Resources
-FIELD_NUM_MACROCELLS    =           22;
-FIELD_NUM_PICOCELLS     =           18;
+FIELD_NUM_MACROCELLS    =           25;
+FIELD_NUM_PICOCELLS     =           50;
 FIELD_NUM_BASE_STATIONS =           FIELD_NUM_MACROCELLS +  ...
     FIELD_NUM_PICOCELLS;                        % (60)
 FIELD_BASE_STATION_CAPACITY =   ...
     [2e9 * ones(FIELD_NUM_MACROCELLS, 1);   ...
-    1e8 * ones(FIELD_NUM_PICOCELLS, 1)];        % (1.5e6)
+    5e8 * ones(FIELD_NUM_PICOCELLS, 1)];        % (1.5e6)
 FIELD_BASE_STATION_RANGE =  ...
-    [1500 * ones(FIELD_NUM_MACROCELLS, 1);  ...
+    [2000 * ones(FIELD_NUM_MACROCELLS, 1);  ...
     250 * ones(FIELD_NUM_PICOCELLS, 1)];        % (500)
 FIELD_BASE_STATION_COST =   ...
     [1 * ones(FIELD_NUM_MACROCELLS, 1); ...
-    0.04 * ones(FIELD_NUM_PICOCELLS, 1)];       % (1)
+    0.2 * ones(FIELD_NUM_PICOCELLS, 1)];        % (1)
 
 % Data Set Settings
-CP_NUM_SOL_DEMAND_POINTS =          90;         % (60); For sol/learning set
-CP_NUM_SOL_DEMAND_REALIZATIONS =    30;         % (20); For sol/learning set
+CP_NUM_SOL_DEMAND_POINTS =          250;         % (60); For sol/learning set
+CP_NUM_SOL_DEMAND_REALIZATIONS =    45;         % (20); For sol/learning set
 
 %% CPLEX Settings
-alpha =                             [6:2:30, 40:10:100];    % (5:5:100)
+alpha =                             [1:1:16, 18:3:30, 40:10:100];    % (5:5:100)
 alphaLength =                       length(alpha);
 
 %% GA Settings

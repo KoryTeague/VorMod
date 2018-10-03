@@ -35,6 +35,7 @@ classdef CplexVorModOneStageMultiSolution < handle
                 lF2 = ['%0' num2str(ceil(log10(length(ID2) + 1))) 'u'];
                 for iFile = 1:length(ID1)
                     for jFile = 1:length(ID2)
+                        fprintf('Reading %i,%i\n', iFile, jFile)
                         obj(iFile, jFile).path = [path '\Vormod_'   ...
                             num2str(iFile, lF1) '_' num2str(jFile, lF2) ...
                             '.dat'];
